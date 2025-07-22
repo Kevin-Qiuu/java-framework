@@ -16,6 +16,8 @@
     <modules>
         <module>bite-mstemplate</module>
         <module>bite-gateway</module>
+        <module>bite-common</module>
+        <module>bite-common/bite-common-core</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>
