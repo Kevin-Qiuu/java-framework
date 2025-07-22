@@ -6,12 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="bite-mstemplate-api" />
+        <module name="bite-mstemplate-service" />
+        <module name="bite-gateway" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="FrameworkJava" options="" />
+      <module name="bite-gateway" options="-parameters" />
+      <module name="bite-mstemplate" options="" />
+      <module name="bite-mstemplate-api" options="-parameters" />
+      <module name="bite-mstemplate-service" options="-parameters" />
     </option>
   </component>
 </project>
