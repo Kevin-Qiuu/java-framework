@@ -2,6 +2,8 @@ server:
   port: 18080
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: bite-gateway
   profiles:
@@ -9,13 +11,13 @@ spring:
   cloud:
     nacos:
       discovery:
-#        username: nacos
-#        password: bite@123
+        username: nacos
+        password: bite@123
         namespace: frameworkjava-${RUN_ENV}
         server-addr: ${NACOS_ADDR}
       config:
-#        username: nacos
-#        password: bite@123
+        username: nacos
+        password: bite@123
         namespace: frameworkjava-${RUN_ENV}
         server-addr: ${NACOS_ADDR}
         file-extension: yaml

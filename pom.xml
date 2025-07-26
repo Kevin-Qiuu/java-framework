@@ -18,6 +18,8 @@
         <module>bite-gateway</module>
         <module>bite-common</module>
         <module>bite-common/bite-common-core</module>
+        <module>bite-common/bite-common-domain</module>
+        <module>bite-common/bite-commom-security</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>
