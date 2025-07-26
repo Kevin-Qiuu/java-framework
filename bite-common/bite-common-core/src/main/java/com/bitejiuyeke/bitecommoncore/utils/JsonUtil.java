@@ -1,15 +1,14 @@
 package com.bitejiuyeke.bitecommoncore.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -98,7 +97,7 @@ public class JsonUtil {
 
     public static <T> T string2Obj(String str, Class<T> tClass) {
 
-        if (null == str || str.isEmpty()) {
+        if (!StringUtils.hasLength(str) || null == tClass) {
             return null;
         }
 
@@ -118,7 +117,7 @@ public class JsonUtil {
         // Java 会在编译阶段进行泛型擦除，
         // 但是子类会将父类的泛型信息存储在字节码中，所以变相的绕开了这个规则，保存了对应的泛型信息
 
-        if (null == str || str.isEmpty()) {
+        if (!StringUtils.hasLength(str) || null == typeReference) {
             return null;
         }
 
@@ -133,7 +132,7 @@ public class JsonUtil {
 
     public static <T> List<T> string2List(String str, Class<T> elementType) {
 
-        if (null == str || str.isEmpty()) {
+        if (!StringUtils.hasLength(str) || null == elementType) {
             return null;
         }
 
@@ -149,7 +148,7 @@ public class JsonUtil {
 
     public static <T> Map<String, T> string2Map(String str, Class<T> elementType) {
 
-        if (null == str || str.isEmpty()) {
+        if (!StringUtils.hasLength(str) || null == elementType  ) {
             return null;
         }
 

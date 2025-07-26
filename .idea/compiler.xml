@@ -7,14 +7,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="bite-mstemplate-api" />
-        <module name="bite-mstemplate-service" />
+        <module name="bite-common-core" />
         <module name="bite-gateway" />
+        <module name="bite-common" />
+        <module name="bite-mstemplate-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="FrameworkJava" options="" />
+      <module name="bite-common" options="-parameters" />
+      <module name="bite-common-core" options="-parameters" />
       <module name="bite-gateway" options="-parameters" />
       <module name="bite-mstemplate" options="" />
       <module name="bite-mstemplate-api" options="-parameters" />
