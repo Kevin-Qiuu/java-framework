@@ -1,15 +1,23 @@
 package com.bitejiuyeke.bitecommonsecurity.handler;
 
+import com.bitejiuyeke.bitecommondomain.constraints.CommonConstraints;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 // @RestControllerAdvice = @ResponseBody + @ControllerAdvice
 // @ControllerAdvice 是 Spring 官方定义的 AOP 策略，其切点是全部的 Controller，通知是类中的 @ExceptionHandler 修饰的方法
@@ -87,6 +95,41 @@ public class GlobalExceptionHandler {
 
         setResponseCode(response, ResultCode.URL_NOT_FOUND.getCode());
         return R.fail(ResultCode.URL_NOT_FOUND.getCode(), ResultCode.URL_NOT_FOUND.getMsg());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
+                                                      HttpServletRequest request,
+                                                      HttpServletResponse response) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址：{}，方法参数不匹配：{}", requestURI, e.getMessage());
+
+        String retMsg = joinMessage(e);
+        setResponseCode(response, ResultCode.INVALID_PARA.getCode());
+        return R.fail(ResultCode.INVALID_PARA.getCode(),
+                !retMsg.isBlank() ? retMsg : ResultCode.INVALID_PARA.getMsg());
+    }
+
+    private String joinMessage(MethodArgumentNotValidException e) {
+        List<ObjectError> allErrors = e.getAllErrors();
+        if (CollectionUtils.isEmpty(allErrors)) {
+            return "";
+        }
+        return allErrors.stream().map(ObjectError::getDefaultMessage)
+                .collect(Collectors.joining(CommonConstraints.DEFAULT_DELIMITER));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public R<?> handleConstraintViolationException(ConstraintViolationException e,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址：{}，方法参数不匹配：{}", requestURI, e.getMessage());
+
+        setResponseCode(response, ResultCode.INVALID_PARA.getCode());
+        String retMsg = e.getMessage();
+        return R.fail(ResultCode.INVALID_PARA.getCode(),
+                !retMsg.isBlank() ? retMsg : ResultCode.INVALID_PARA.getMsg());
     }
 
     /**
