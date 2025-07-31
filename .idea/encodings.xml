@@ -4,7 +4,9 @@
     <file url="file://$PROJECT_DIR$/bite-common/bite-commom-security/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-common/bite-common-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-common/bite-common-domain/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-common/bite-common-redis/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-mstemplate/bite-mstemplate-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-mstemplate/bite-mstemplate-service/src/main/java" charset="UTF-8" />

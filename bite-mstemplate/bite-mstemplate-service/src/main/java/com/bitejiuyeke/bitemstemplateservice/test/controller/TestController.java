@@ -1,12 +1,8 @@
-package com.bitejiuyeke.bitemstemplateservice.test;
+package com.bitejiuyeke.bitemstemplateservice.test.controller;
 
-import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
-import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
-import com.bitejiuyeke.bitemstemplateservice.domain.ValidationUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestController

@@ -1,4 +1,4 @@
-package com.bitejiuyeke.bitemstemplateservice.test;
+package com.bitejiuyeke.bitemstemplateservice.test.controller;
 
 import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

@@ -20,32 +20,39 @@ public class ThreadPoolConfig {
     /**
      * 核心线程数
      */
-    @Value("${thread.pool-executor.corePoolSize:5}")
+    @Value("${thread.pool-executor.corePoolSize:8}")
     private Integer corePoolSize;
 
     /**
      * 最大线程数
      */
-    @Value("${thread.pool-executor.maxPoolSize}")
+    @Value("${thread.pool-executor.maxPoolSize:20}")
     private Integer maxPoolSize;
 
     /**
      * 阻塞队列容量
      */
-    @Value("${thread.pool-executor.queueCapacity}")
+    @Value("${thread.pool-executor.queueCapacity:30}")
     private Integer queueCapacity;
 
     /**
      * 拒绝策略类型
      */
-    @Value("${thread.pool-executor.rejectedExecutionType}")
+    @Value("${thread.pool-executor.rejectedExecutionType:2}")
     private Integer rejectedExecutionType;
+
+    /**
+     * 空闲线程存活时间（单位：秒）
+     */
+    @Value("${thread.pool-executor.keepAliveSeconds:60}")
+    private Integer keepAliveSeconds;
 
     /**
      * 线程名称前缀
      */
-    @Value("${thread.pool-executor.threadNamePrefix}")
+    @Value("${thread.pool-executor.threadNamePrefix:thread-service-}")
     private String threadNamePrefix;
+
 
     @Bean("threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor getThreadPoolTaskExecutor() {
@@ -56,6 +63,7 @@ public class ThreadPoolConfig {
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
         executor.setRejectedExecutionHandler(getRejectedExecutionHandler(rejectedExecutionType));
+        executor.setKeepAliveSeconds(keepAliveSeconds);
         executor.setThreadNamePrefix(threadNamePrefix);
 
         return executor;
