@@ -1,6 +1,6 @@
-package com.bitejiuyeke.bitecommondomain.constraints;
+package com.bitejiuyeke.bitecommondomain.constants;
 
-public class CommonConstraints {
+public class CommonConstants {
 
     /**
      * 通⽤⽇期格式

@@ -1,6 +1,6 @@
 package com.bitejiuyeke.bitecommoncore.utils;
 
-import com.bitejiuyeke.bitecommondomain.constraints.CommonConstraints;
+import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
@@ -48,17 +48,17 @@ public class JsonUtil {
                 .addModule(new SimpleModule()
                         // 定义序列化 LocalDateTime 或者 LocalDate 的时间格式
                         .addSerializer(LocalDateTime.class,
-                                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstraints.STANDARD_FORMAT)))
+                                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(CommonConstants.STANDARD_FORMAT)))
                         // 定义反序列化 LocalDateTime 或者 LocalDate 的时间格式
                         .addDeserializer(LocalDateTime.class,
-                                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstraints.STANDARD_FORMAT)))
+                                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(CommonConstants.STANDARD_FORMAT)))
                         // 添加对 LocalDate 的支持
                         .addSerializer(LocalDate.class,
-                                new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstraints.STANDARD_FORMAT)))
+                                new LocalDateSerializer(DateTimeFormatter.ofPattern(CommonConstants.STANDARD_FORMAT)))
                         .addDeserializer(LocalDate.class,
-                                new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstraints.STANDARD_FORMAT))))
+                                new LocalDateDeserializer(DateTimeFormatter.ofPattern(CommonConstants.STANDARD_FORMAT))))
                 // 定义时间信息的具体格式
-                .defaultDateFormat(new SimpleDateFormat(CommonConstraints.STANDARD_FORMAT))
+                .defaultDateFormat(new SimpleDateFormat(CommonConstants.STANDARD_FORMAT))
                 // 序列化时，只针对对象中非空的字段进行序列化，值为 null 的字段不予以考虑
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .build();
@@ -125,6 +125,7 @@ public class JsonUtil {
 
         // Java 会在编译阶段进行泛型擦除，
         // 但是子类会将父类的泛型信息存储在字节码中，所以变相的绕开了这个规则，保存了对应的泛型信息
+        // 这里的 typeReference 代表的是整个目标对象的类型信息，包括复杂的泛型嵌套结构。
 
         if (!StringUtils.hasLength(str) || null == typeReference) {
             return null;

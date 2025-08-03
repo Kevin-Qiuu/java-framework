@@ -1,6 +1,6 @@
 package com.bitejiuyeke.bitecommonsecurity.handler;
 
-import com.bitejiuyeke.bitecommondomain.constraints.CommonConstraints;
+import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import jakarta.servlet.http.HttpServletRequest;
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
             return "";
         }
         return allErrors.stream().map(ObjectError::getDefaultMessage)
-                .collect(Collectors.joining(CommonConstraints.DEFAULT_DELIMITER));
+                .collect(Collectors.joining(CommonConstants.DEFAULT_DELIMITER));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

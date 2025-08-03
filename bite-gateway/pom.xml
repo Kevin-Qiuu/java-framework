@@ -63,9 +63,15 @@
 
         <dependency>
             <groupId>com.bitejiuyeke</groupId>
-            <artifactId>bite-commom-security</artifactId>
+            <artifactId>bite-common-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.bitejiuyeke</groupId>-->
+<!--            <artifactId>bite-commom-security</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
