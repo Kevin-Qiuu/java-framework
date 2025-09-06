@@ -18,6 +18,7 @@ public class BeanCopyUtil extends BeanUtils {
      * @return 目标 bean 列表
      * @param <S> 源 bean 类型
      * @param <T> 目标 bean 类型
+     *
      */
     public static <S, T> List<T> copyListProperties(List<S> sourceList, Supplier<T> target) {
 

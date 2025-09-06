@@ -4,16 +4,21 @@ import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+/**
+ * Redis 的五大数据结构：String、List、HashSet、Set、ZSet
+ * Redis 所有其实都是一个键值对，key -> value
+ * Redis 的数据结构都是根据 value 去划分的，换句话说所有的数据结构都是通过一个 key 来去索引的
+ */
 
 @Component
 public class RedisService {
@@ -105,13 +110,24 @@ public class RedisService {
      * 缓存 String 数据，如果指定键不存在则存储，如果指定键存在则跳过
      * @param key Redis 键
      * @param value 缓存的值
+     * @param <T> 缓存的值的对象泛型
+     * @return 是否缓存了对象，缓存成功则返回 true， 返回失败则返回 false
+     */
+    public <T> Boolean setCacheObjectIfAbsent(final String key, final T value) {
+        return redisTemplate.opsForValue().setIfAbsent(key, value);
+    }
+
+    /**
+     * 缓存 String 数据，如果指定键不存在则存储，如果指定键存在则跳过
+     * @param key Redis 键
+     * @param value 缓存的值
      * @param timeOut 有效时间
      * @param timeUnit 时间的单位
      * @param <T> 缓存的值的对象泛型
      * @return 是否缓存了对象，缓存成功则返回 true， 返回失败则返回 false
      */
     public <T> Boolean setCacheObjectIfAbsent(final String key, final T value, long timeOut, TimeUnit timeUnit) {
-        redisTemplate.opsForValue().setIfAbsent(key, value, timeOut, timeUnit);
+        return redisTemplate.opsForValue().setIfAbsent(key, value, timeOut, timeUnit);
     }
 
     public <T> T getCacheObject(final String key, Class<T> tClass) {
@@ -368,6 +384,121 @@ public class RedisService {
     }
 
     //***************************** 操作 Hash 数据结构 *****************************
+    /*
+     1、缓存 Java 中的 Map 数据
+     2、往 Hash 中存入单个数据
+     3、删除 Hash 中的某个数据
+     4、获取 Hash 中的单条数据
+     5、获取 Hash 中的多条数据（需要传递一个 Key 的集合）
+     */
 
+    /**
+     * 缓存 java 中的 Map 数据
+     * @param key       Redis 的 key
+     * @param dataMap   存入的 HashMap
+     * @param <T>       存入的 HashMap 的值类型
+     */
+    public <T> void setCacheMap(String key, final Map<String, T> dataMap) {
+        if (dataMap != null) {
+            redisTemplate.opsForHash().putAll(key, dataMap);
+        }
+    }
 
+    /**
+     * 向 Redis 中的某个 HashMap 中添加元素
+     * @param key       Redis 中的键
+     * @param hashKey   HashMap 中的键
+     * @param value     存入的 HashMap 的值
+     * @param <T>       存入值的类型
+     */
+    public <T> void setCacheMapValue(String key, String hashKey, final T value) {
+        redisTemplate.opsForHash().put(key, hashKey, value);
+    }
+
+    /**
+     * 删除某个 HashMap 中的某个值
+     * @param key       Redis 中的键
+     * @param hashKey   HashMap 中的键
+     * @return          删除成功返回 True，失败返回 False
+     */
+    public boolean deleteCacheMapValue(String key, String hashKey) {
+        return redisTemplate.opsForHash().delete(key, hashKey) > 0;
+    }
+
+    /**
+     * 获取 HashMap 中的某一个值
+     * @param key       Redis 中的键
+     * @param hashKey   HashMap 中的键
+     * @return          HashMap 中的值
+     * @param <T>       值类型
+     */
+    public <T> T getCacheMapValue(String key, String hashKey) {
+        HashOperations<String, String, T> hashOperations = redisTemplate.opsForHash();
+        return hashOperations.get(key, hashKey);
+    }
+
+    /**
+     * 获取 HashMap 中的某一个值（支持复杂类型嵌套）
+     * @param key       Redis 中的键
+     * @param hashKey   HashMap 中的键
+     * @param valueType 复杂嵌套的类型
+     * @return          HashMap 中的值
+     * @param <T>       值类型
+     */
+    public <T> T getCacheMapValue(String key, String hashKey, TypeReference<T> valueType) {
+        HashOperations<String, String, T> hashOperations = redisTemplate.opsForHash();
+        return JsonUtil.string2Obj(JsonUtil.obj2String(hashOperations.get(key, hashKey)), valueType);
+    }
+
+    /**
+     * 获取整个 HashMap 对象
+     * @param key   Redis 中的键
+     * @return      Map<String, T>
+     * @param <T>   HashMap 中存放的元素类型
+     */
+    public <T> Map<String, T> getCacheMap(String key) {
+        return (Map<String, T>) redisTemplate.opsForHash().entries(key);
+    }
+
+    /**
+     * 获取整个 HashMap 对象（支持复杂嵌套）
+     * @param key   Redis 中的键
+     * @return      Map<String, T>
+     * @param <T>   HashMap 中存放的元素类型
+     */
+    public <T> Map<String, T> getCacheMap(String key, TypeReference<Map<String, T>> valueType) {
+        Map entries = redisTemplate.opsForHash().entries(key);
+        return JsonUtil.string2Obj(JsonUtil.obj2String(entries), valueType);
+    }
+
+    public <T> List<T> getMultiCacheMapValue(String key, List<String> hashKeys) {
+        return redisTemplate.opsForHash().multiGet(key, hashKeys);
+    }
+
+    public <T> List<T> getMultiCacheMapValue(String key, List<String> hashKeys, TypeReference<List<T>> valueType) {
+        List list = redisTemplate.opsForHash().multiGet(key, hashKeys);
+        return JsonUtil.string2Obj(JsonUtil.obj2String(list), valueType);
+    }
+
+    //******************************** LUA脚本 ***********************************
+    /**
+     * 删除指定值对应的 Redis 中的键值（compare and delete）
+     *
+     * @param key   缓存key
+     * @param value value
+     * @return 是否完成了比较并删除
+     */
+    public boolean cad(String key, String value) {
+//        if (key.contains(StringUtils.SPACE) || value.contains(StringUtils.SPACE)) {
+//            return false;
+//        }
+
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+
+        // 通过lua脚本原子验证令牌和删除令牌
+        Long result = (Long) redisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
+                Collections.singletonList(key),
+                value);
+        return !Objects.equals(result, 0L);
+    }
 }
