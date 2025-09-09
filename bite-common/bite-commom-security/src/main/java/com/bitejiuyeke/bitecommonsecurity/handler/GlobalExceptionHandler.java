@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 // @RestControllerAdvice = @ResponseBody + @ControllerAdvice
 // @ControllerAdvice 是 Spring 官方定义的 AOP 策略，其切点是全部的 Controller，通知是类中的 @ExceptionHandler 修饰的方法
+// 但是其实现的原理与 @Aspect 的 AOP 策略不同，这一点需加以区分
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

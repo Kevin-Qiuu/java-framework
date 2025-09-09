@@ -3,12 +3,12 @@ package com.bitejiuyeke.bitecommonredis.service;
 import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.*;
@@ -489,9 +489,9 @@ public class RedisService {
      * @return 是否完成了比较并删除
      */
     public boolean cad(String key, String value) {
-//        if (key.contains(StringUtils.SPACE) || value.contains(StringUtils.SPACE)) {
-//            return false;
-//        }
+        if (key.contains(StringUtils.SPACE) || value.contains(StringUtils.SPACE)) {
+            return false;
+        }
 
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 

@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.bitejiuyeke.bitecommonredis.service.RedisService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -107,6 +105,7 @@ public class TestRedisController {
                 car.setPrice(15000L);
                 car.setElementInfo(new HashMap<>());
                 car.getElementInfo().put("Door", 3L);
+
             }
         }
 
