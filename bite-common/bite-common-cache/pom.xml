@@ -5,21 +5,32 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.bitejiuyeke</groupId>
-        <artifactId>FrameworkJava</artifactId>
+        <artifactId>bite-common</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>bite-common</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>bite-common-redis</module>
-        <module>bite-common-cache</module>
-    </modules>
+    <artifactId>bite-common-cache</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.bitejiuyeke</groupId>
+            <artifactId>bite-common-redis</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>
