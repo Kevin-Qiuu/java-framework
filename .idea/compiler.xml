@@ -9,8 +9,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="bite-mstemplate-api" />
         <module name="bite-common-core" />
+        <module name="bite-common-rabbitmq" />
         <module name="bite-common-domain" />
         <module name="bite-common-redis" />
+        <module name="bite-common-cache" />
         <module name="bite-gateway" />
         <module name="bite-commom-security" />
         <module name="bite-mstemplate-service" />
@@ -22,8 +24,10 @@
       <module name="FrameworkJava" options="" />
       <module name="bite-commom-security" options="-parameters" />
       <module name="bite-common" options="" />
+      <module name="bite-common-cache" options="-parameters" />
       <module name="bite-common-core" options="-parameters" />
       <module name="bite-common-domain" options="-parameters" />
+      <module name="bite-common-rabbitmq" options="-parameters" />
       <module name="bite-common-redis" options="-parameters" />
       <module name="bite-gateway" options="-parameters" />
       <module name="bite-mstemplate" options="" />

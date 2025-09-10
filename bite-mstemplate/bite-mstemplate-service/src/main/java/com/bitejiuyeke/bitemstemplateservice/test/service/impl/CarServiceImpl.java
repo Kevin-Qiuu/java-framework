@@ -35,6 +35,8 @@ public class CarServiceImpl implements CarService {
     @Override
     public void setCarValue(Integer carId, Integer carValue) {
         String key = "car:" + carId;
+        // todo
+        // 写入缓存，Redis 写入失败
         CacheUtil.setL2Cache(key, carValue, redisService, caffeineCache, 120L, TimeUnit.SECONDS);
     }
 

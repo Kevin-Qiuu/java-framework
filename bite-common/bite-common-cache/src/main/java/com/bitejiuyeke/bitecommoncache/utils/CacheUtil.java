@@ -55,7 +55,7 @@ public class CacheUtil {
                                       RedisService redisService, Cache<String, Object> caffeineCache,
                                       final Long timeout, final TimeUnit timeUnit) {
         caffeineCache.put(key, value);
-        redisService.setCacheObject(key, value, timeout, TimeUnit.MILLISECONDS);
+        redisService.setCacheObject(key, value, timeout, timeUnit);
         log.info("更新 Redis 与 本地缓存信息: {}", key);
     }
 
