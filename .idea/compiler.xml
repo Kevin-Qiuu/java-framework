@@ -8,6 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="bite-mstemplate-api" />
+        <module name="bite-file-api" />
+        <module name="bite-file-service" />
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
         <module name="bite-common-domain" />
@@ -29,6 +31,9 @@
       <module name="bite-common-domain" options="-parameters" />
       <module name="bite-common-rabbitmq" options="-parameters" />
       <module name="bite-common-redis" options="-parameters" />
+      <module name="bite-file" options="" />
+      <module name="bite-file-api" options="-parameters" />
+      <module name="bite-file-service" options="-parameters" />
       <module name="bite-gateway" options="-parameters" />
       <module name="bite-mstemplate" options="" />
       <module name="bite-mstemplate-api" options="-parameters" />

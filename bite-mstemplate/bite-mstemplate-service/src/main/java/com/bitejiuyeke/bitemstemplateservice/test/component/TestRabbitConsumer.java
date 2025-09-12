@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RabbitListener(queues = "${rabbitmq.queue-name:DirectQueue}")
+@RabbitListener(queues = "${rabbitmq-component.queue-name:DirectQueue}")
 public class TestRabbitConsumer {
 
     @Autowired

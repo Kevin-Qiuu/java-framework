@@ -127,34 +127,39 @@ public enum ResultCode {
     PRE_SIGN_URL_FAILED                        (500003, "获取直传地址失败"),
 
     /**
-     * 上传oss异常，请稍后重试
+     * 上传 oss 异常，请稍后重试
      */
-    OSS_UPLOAD_FAILED                        (500004, "上传oss异常，请稍后重试"),
+    OSS_UPLOAD_FAILED                        (500004, "上传 oss 异常，请稍后重试"),
+
+    /**
+     * 上传 cos 异常，请稍后重试
+     */
+    COS_UPLOAD_FAILED                        (500005, "上传 cos 异常，请稍后重试"),
 
     /**
      * 获取地图数据失败，请稍后重试
      */
-    QQMAP_QUERY_FAILED                        (500005, "获取地图数据失败，请稍后重试"),
+    QQMAP_QUERY_FAILED                        (500006, "获取地图数据失败，请稍后重试"),
 
     /**
      * 城市信息获取失败
      */
-    QQMAP_CITY_UNKNOW                        (500006, "城市信息获取失败"),
+    QQMAP_CITY_UNKNOW                        (500007, "城市信息获取失败"),
 
     /**
      * 根据位置获取城市失败
      */
-    QQMAP_LOCATE_FAILED                        (500007, "根据位置获取城市失败"),
+    QQMAP_LOCATE_FAILED                        (500008, "根据位置获取城市失败"),
 
     /**
      * 地图特性未开启
      */
-    MAP_NOT_ENABLED                        (500008, "地图特性未开启,开启方式参考使用手册"),
+    MAP_NOT_ENABLED                        (500009, "地图特性未开启,开启方式参考使用手册"),
 
     /**
      * 地图区划特性未开启
      */
-    MAP_REGION_NOT_ENABLED                        (500009, "地图区划特性未开启,开启方式参考使用手册"),
+    MAP_REGION_NOT_ENABLED                        (500010, "地图区划特性未开启,开启方式参考使用手册"),
 
 
     //---------------------枚举占位

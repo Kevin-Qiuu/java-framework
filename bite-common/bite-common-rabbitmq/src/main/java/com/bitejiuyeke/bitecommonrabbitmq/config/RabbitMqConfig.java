@@ -23,33 +23,33 @@ public class RabbitMqConfig {
     /**
      * 队列名称
      */
-    @Value("${rabbitmq.queue-name:DirectQueue}")
+    @Value("${rabbitmq-component.queue-name:DirectQueue}")
     private String queueName;
     /**
      * 交换机名称
      */
-    @Value("${rabbitmq.exchange-name:DirectExchange}")
+    @Value("${rabbitmq-component.exchange-name:DirectExchange}")
     private String exchangeName;
     /**
      * 路由 key
      */
-    @Value("${rabbitmq.routing:DirectRouting}")
+    @Value("${rabbitmq-component.routing:DirectRouting}")
     private String routing;
 
     /**
      * 死信队列名称
      */
-    @Value("${rabbitmq.dlx-queue-name:DlxDirectQueue}")
+    @Value("${rabbitmq-component.dlx-queue-name:DlxDirectQueue}")
     private String dlxQueueName;
     /**
      * 死信交换机名称
      */
-    @Value("${rabbitmq.dlx-exchange-name:DlxDirectExchange}")
+    @Value("${rabbitmq-component.dlx-exchange-name:DlxDirectExchange}")
     private String dlxExchangeName;
     /**
      * 死信路由 key
      */
-    @Value("${rabbitmq.dlx-routing:DlxDirectRouting}")
+    @Value("${rabbitmq-component.dlx-routing:DlxDirectRouting}")
     private String dlxRouting;
 
     @Bean

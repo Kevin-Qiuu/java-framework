@@ -20,11 +20,12 @@
         <module>bite-common/bite-common-core</module>
         <module>bite-common/bite-common-domain</module>
         <module>bite-common/bite-commom-security</module>
+        <module>bite-file</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>
 
-     <properties>
+    <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
@@ -41,25 +42,28 @@
         <commons-collections4.version>4.4</commons-collections4.version>
 
         <aliyun.oss.version>3.15.1</aliyun.oss.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <tencent-cloud.cos.version>5.6.227</tencent-cloud.cos.version>
+        <tencent-cloud.cos-sts.version>3.1.0</tencent-cloud.cos-sts.version>
         <jwt.version>0.9.1</jwt.version>
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <hutool.version>5.8.25</hutool.version>
         <aliyun.sms.version>3.1.1</aliyun.sms.version>
 
-<!--        &lt;!&ndash;运行环境&ndash;&gt;-->
-<!--        <runenv>test</runenv>-->
-<!--        <java.opts.default>-Xmx256m</java.opts.default>-->
+        <!--        &lt;!&ndash;运行环境&ndash;&gt;-->
+        <!--        <runenv>test</runenv>-->
+        <!--        <java.opts.default>-Xmx256m</java.opts.default>-->
 
-<!--        &lt;!&ndash;系统配置中心&ndash;&gt;-->
-<!--        <nacos.addr>http://你的云服务器内网ip/你的虚拟机内网ip:8848</nacos.addr>-->
+        <!--        &lt;!&ndash;系统配置中心&ndash;&gt;-->
+        <!--        <nacos.addr>http://你的云服务器内网ip/你的虚拟机内网ip:8848</nacos.addr>-->
 
-<!--        &lt;!&ndash;docker部署配置&ndash;&gt;-->
-<!--        <dockerhost.addr>tcp://你的云服务器内网ip/你的虚拟机内网ip:2376</dockerhost.addr>-->
-<!--        <dockerregistry.url>registry.cn-chengdu.aliyuncs.com</dockerregistry.url>-->
-<!--        <dockerregistry.username>houyj1987@163.com</dockerregistry.username>-->
-<!--        <dockerregistry.password>admin@666777</dockerregistry.password>-->
-<!--        <dockerregistry.namespace>frameworkjava</dockerregistry.namespace>-->
-<!--        <docker.skip.push>true</docker.skip.push>-->
+        <!--        &lt;!&ndash;docker部署配置&ndash;&gt;-->
+        <!--        <dockerhost.addr>tcp://你的云服务器内网ip/你的虚拟机内网ip:2376</dockerhost.addr>-->
+        <!--        <dockerregistry.url>registry.cn-chengdu.aliyuncs.com</dockerregistry.url>-->
+        <!--        <dockerregistry.username>houyj1987@163.com</dockerregistry.username>-->
+        <!--        <dockerregistry.password>admin@666777</dockerregistry.password>-->
+        <!--        <dockerregistry.namespace>frameworkjava</dockerregistry.namespace>-->
+        <!--        <docker.skip.push>true</docker.skip.push>-->
     </properties>
 
     <dependencyManagement>
@@ -141,6 +145,22 @@
                 <version>${aliyun.sms.version}</version>
             </dependency>
 
+            <!-- 腾讯云 COS -->
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>${tencent-cloud.cos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos-sts_api</artifactId>
+                <version>${tencent-cloud.cos-sts.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
