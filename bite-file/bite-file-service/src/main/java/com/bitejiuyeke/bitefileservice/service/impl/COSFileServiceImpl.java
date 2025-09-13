@@ -80,25 +80,28 @@ public class COSFileServiceImpl implements IFileService {
         return fileDTO;
     }
 
+
+
     @Override
-    public COSSignDTO getCOSSign() {
+    public COSSignDTO getCOSSign(String filename) {
         // 创建身份认证信息
         COSCredentials cred = new BasicCOSCredentials(cosProperties.getSecretId(), cosProperties.getSecretKey());
         COSSigner cosSigner = new COSSigner();
 
         // 构建资源路径
         String bucketName = cosProperties.getBucketName();
-        String uid = bucketName.substring(bucketName.lastIndexOf("-") + 1);
-        String resourcePath = "/" + cosProperties.getPathPrefix() + "*";
+        String extName = filename.substring(filename.lastIndexOf("."));
+        filename = UUID.randomUUID() + extName;
+        String resourcePath = "/" + cosProperties.getPathPrefix() + filename;
 
         // 构建host头部信息
         String host = bucketName + ".cos." + cosProperties.getRegionName() + ".myqcloud.com";
         Map<String, String> headers = new HashMap<>();
-        headers.put("host", "1");
+        headers.put("host", host);
 
 
         String authorizationStr = cosSigner.buildAuthorizationStr(HttpMethodName.PUT, resourcePath, headers, new HashMap<>(),
-                cred, new Date(cosProperties.getExpiredTime() + System.currentTimeMillis()));
-        return new COSSignDTO(authorizationStr);
+                cred, new Date(cosProperties.getSignExpiredTime() * 1000L + System.currentTimeMillis()));
+        return new COSSignDTO(cosProperties.getPathPrefix(), filename, host, authorizationStr);
     }
 }

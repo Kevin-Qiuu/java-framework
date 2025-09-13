@@ -45,12 +45,11 @@ public class TestCOSController {
     }
 
     @GetMapping("/getCOSSign")
-    public R<COSSignVO> getCOSSign() {
-        COSSignDTO cosSignDTO = fileService.getCOSSign();
+    public R<COSSignVO> getCOSSign(String filename) {
+        COSSignDTO cosSignDTO = fileService.getCOSSign(filename);
         COSSignVO cosSignVO = new COSSignVO();
         BeanCopyUtil.copyProperties(cosSignDTO, cosSignVO);
         return R.ok(cosSignVO);
     }
-
 
 }

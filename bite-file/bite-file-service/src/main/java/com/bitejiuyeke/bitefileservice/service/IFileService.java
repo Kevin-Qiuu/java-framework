@@ -17,7 +17,7 @@ public interface IFileService {
      * 获取 COS 签名信息
      * @return cos 签名信息
      */
-    default COSSignDTO getCOSSign() {return null;};
+    default COSSignDTO getCOSSign(String filename) {return null;};
 
     /**
      * 获取 OOS 签名信息

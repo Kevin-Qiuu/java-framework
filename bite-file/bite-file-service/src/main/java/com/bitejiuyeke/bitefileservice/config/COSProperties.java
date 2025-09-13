@@ -20,9 +20,9 @@ public class COSProperties {
      */
     private String secretKey;
     /**
-     * 上传文件超时时限（单位：毫秒）
+     * 上传文件超时时限（单位：秒）
      */
-    private Integer connectionTimeout;
+    private Long connectionTimeout;
     /**
      * 地域代码
      */
@@ -36,9 +36,9 @@ public class COSProperties {
      */
     private String pathPrefix;
     /**
-     * 签名有效时间（单位：豪秒）
+     * 签名有效时间（单位：秒）
      */
-    private Integer expiredTime;
+    private Long signExpiredTime;
 
 
 }
