@@ -16,6 +16,12 @@ public class COSSignVO {
     private String filename;
 
     /**
+     * 允许上传的文件 url
+     * 前端可以请求的 url（已签名授权）
+     */
+    private String uploadFileUrl;
+
+    /**
      * Host
      * 请求的主机，形式为<BucketName-APPID>.cos.<Region>.myqcloud.com
      */

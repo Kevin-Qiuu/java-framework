@@ -44,6 +44,10 @@ public class COSFileServiceImpl implements IFileService {
 
     @Override
     public FileDTO upload(MultipartFile file) {
+         if (file == null || file.isEmpty()) {
+            log.error("上传文件为空");
+            throw new ServiceException(ResultCode.COS_UPLOAD_FAILED);
+        }
         FileDTO fileDTO = new FileDTO();
         try {
             // 直接使用 MultipartFile 的 InputStream 进行上传
@@ -80,10 +84,13 @@ public class COSFileServiceImpl implements IFileService {
         return fileDTO;
     }
 
-
-
     @Override
-    public COSSignDTO getCOSSign(String filename) {
+    public COSSignDTO getCOSSign(String filename, Boolean useUUIDFilename) {
+        if (StringUtils.hasLength(filename) || filename.lastIndexOf(".") == -1) {
+            log.error("请求上传的文件名为空，或者不存在文件后缀名，filename:{}", filename);
+            throw new ServiceException(ResultCode.COS_UPLOAD_FAILED);
+        }
+        useUUIDFilename = useUUIDFilename != null && useUUIDFilename;
         // 创建身份认证信息
         COSCredentials cred = new BasicCOSCredentials(cosProperties.getSecretId(), cosProperties.getSecretKey());
         COSSigner cosSigner = new COSSigner();
@@ -91,7 +98,9 @@ public class COSFileServiceImpl implements IFileService {
         // 构建资源路径
         String bucketName = cosProperties.getBucketName();
         String extName = filename.substring(filename.lastIndexOf("."));
-        filename = UUID.randomUUID() + extName;
+        if (useUUIDFilename) {
+            filename = UUID.randomUUID() + extName;
+        }
         String resourcePath = "/" + cosProperties.getPathPrefix() + filename;
 
         // 构建host头部信息
@@ -102,6 +111,12 @@ public class COSFileServiceImpl implements IFileService {
 
         String authorizationStr = cosSigner.buildAuthorizationStr(HttpMethodName.PUT, resourcePath, headers, new HashMap<>(),
                 cred, new Date(cosProperties.getSignExpiredTime() * 1000L + System.currentTimeMillis()));
-        return new COSSignDTO(cosProperties.getPathPrefix(), filename, host, authorizationStr);
+        COSSignDTO cosSignDTO = new COSSignDTO();
+        cosSignDTO.setHost(host);
+        cosSignDTO.setFilename(filename);
+        cosSignDTO.setUploadFileUrl("https://" + host + resourcePath);
+        cosSignDTO.setKeyPrefix(cosSignDTO.getKeyPrefix());
+        cosSignDTO.setAuthorizationStr(authorizationStr);
+        return cosSignDTO;
     }
 }
