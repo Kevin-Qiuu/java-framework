@@ -21,6 +21,7 @@
         <module>bite-common/bite-common-domain</module>
         <module>bite-common/bite-commom-security</module>
         <module>bite-file</module>
+        <module>bite-admin</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>

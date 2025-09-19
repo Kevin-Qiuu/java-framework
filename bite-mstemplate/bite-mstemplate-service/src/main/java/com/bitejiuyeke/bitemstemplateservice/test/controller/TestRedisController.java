@@ -1,6 +1,5 @@
 package com.bitejiuyeke.bitemstemplateservice.test.controller;
 
-import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitemstemplateservice.domain.Car;
 import com.fasterxml.jackson.core.type.TypeReference;

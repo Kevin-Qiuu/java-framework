@@ -3,7 +3,7 @@ package com.bitejiuyeke.bitecommoncore.enums;
 import lombok.Getter;
 
 @Getter
-public enum RejectedExecutionType {
+public enum ThreadPoolRejectedExecutionType {
     /**
      * 1. AbortPolicy（默认策略）
      * 直接抛出 RejectedExecutionException 异常，阻止系统正常运行。
@@ -27,11 +27,11 @@ public enum RejectedExecutionType {
 
     private Integer value;
 
-    RejectedExecutionType(Integer value) {this.value = value;}
+    ThreadPoolRejectedExecutionType(Integer value) {this.value = value;}
 
-    public static RejectedExecutionType forValue(Integer value) {
+    public static ThreadPoolRejectedExecutionType forValue(Integer value) {
 
-        for (RejectedExecutionType type : RejectedExecutionType.values()) {
+        for (ThreadPoolRejectedExecutionType type : ThreadPoolRejectedExecutionType.values()) {
             if (type.value.equals(value))
                 return type;
         }

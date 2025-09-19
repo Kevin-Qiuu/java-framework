@@ -1,6 +1,6 @@
 package com.bitejiuyeke.bitecommoncore.config;
 
-import com.bitejiuyeke.bitecommoncore.enums.RejectedExecutionType;
+import com.bitejiuyeke.bitecommoncore.enums.ThreadPoolRejectedExecutionType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,7 +72,7 @@ public class ThreadPoolConfig {
 
     private RejectedExecutionHandler getRejectedExecutionHandler(Integer rejectedExecutionType) {
 
-        RejectedExecutionType type = RejectedExecutionType.forValue(rejectedExecutionType);
+        ThreadPoolRejectedExecutionType type = ThreadPoolRejectedExecutionType.forValue(rejectedExecutionType);
 
         if (null == type) {
             return new ThreadPoolExecutor.CallerRunsPolicy();

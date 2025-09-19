@@ -3,9 +3,12 @@ package com.bitejiuyeke.bitemstemplateservice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@EnableFeignClients(basePackages = "com.bitejiuyeke.bitemstemplateservice.feign")
 /**
  * 网关服务的工作流程：
  * 1. 各个微服务启动时向 Nacos 注册自己的信息

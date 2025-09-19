@@ -7,15 +7,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="bite-mstemplate-api" />
         <module name="bite-file-api" />
         <module name="bite-file-service" />
-        <module name="bite-common-core" />
-        <module name="bite-common-rabbitmq" />
+        <module name="bite-admin-api" />
         <module name="bite-common-domain" />
         <module name="bite-common-redis" />
-        <module name="bite-common-cache" />
         <module name="bite-gateway" />
+        <module name="bite-mstemplate-api" />
+        <module name="bite-common-core" />
+        <module name="bite-common-rabbitmq" />
+        <module name="bite-admin-service" />
+        <module name="bite-common-cache" />
         <module name="bite-commom-security" />
         <module name="bite-mstemplate-service" />
       </profile>
@@ -24,6 +26,9 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="FrameworkJava" options="" />
+      <module name="bite-admin" options="" />
+      <module name="bite-admin-api" options="-parameters" />
+      <module name="bite-admin-service" options="-parameters" />
       <module name="bite-commom-security" options="-parameters" />
       <module name="bite-common" options="" />
       <module name="bite-common-cache" options="-parameters" />

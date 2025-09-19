@@ -1,14 +1,8 @@
 package com.bitejiuyeke.bitemstemplateservice.test.controller;
 
-import com.bitejiuyeke.bitecommoncache.utils.CacheUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
-import com.bitejiuyeke.bitecommonredis.service.RedisService;
 import com.bitejiuyeke.bitemstemplateservice.test.service.CarService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.benmanes.caffeine.cache.Cache;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
