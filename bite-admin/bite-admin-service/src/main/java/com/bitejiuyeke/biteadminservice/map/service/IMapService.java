@@ -8,4 +8,6 @@ public interface IMapService {
 
     List<RegionDTO> getCityList();
 
+    List<RegionDTO> getHotCityList();
+
 }

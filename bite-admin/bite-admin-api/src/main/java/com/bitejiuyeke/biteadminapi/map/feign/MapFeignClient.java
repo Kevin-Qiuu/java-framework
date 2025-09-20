@@ -15,4 +15,8 @@ public interface MapFeignClient {
     @GetMapping("/map/cityList")
     R<List<RegionVO>> getCityList();
 
+    @GetMapping("/map/hotCityList")
+    R<List<RegionVO>> getHotCityList();
+
+
 }

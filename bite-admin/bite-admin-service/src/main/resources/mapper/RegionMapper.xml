@@ -8,5 +8,12 @@
     <select id="selectAllRegion" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
         select * from sys_region;
     </select>
+    
+    <select id="selectRegionByIds" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
+        select * from sys_region where id in
+        <foreach item="id" collection="regionIds" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

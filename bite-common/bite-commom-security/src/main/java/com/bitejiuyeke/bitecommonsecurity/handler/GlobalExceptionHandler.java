@@ -149,7 +149,7 @@ public class GlobalExceptionHandler {
         String requestURI = request.getRequestURI();
         log.error("请求地址：{}，运行时异常：", requestURI, e);
 
-        setResponseCode(response, ResultCode.ERROR_CODE.getCode());
+        setResponseCode(response, ResultCode.SERVICE_NOT_FOUND.getCode());
         return R.fail();
     }
 

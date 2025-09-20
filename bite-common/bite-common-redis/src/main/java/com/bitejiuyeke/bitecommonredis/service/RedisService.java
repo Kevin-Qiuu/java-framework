@@ -135,7 +135,7 @@ public class RedisService {
         if (null == object) {
             return null;
         }
-        return JsonUtil.string2Obj(object.toString(), tClass);
+        return JsonUtil.string2Obj(JsonUtil.obj2String(object), tClass);
     }
 
     public <T> T getCacheObject(final String key, TypeReference<T> tClass) {
@@ -143,7 +143,7 @@ public class RedisService {
         if (null == object) {
             return null;
         }
-        return JsonUtil.string2Obj(object.toString(), tClass);
+        return JsonUtil.string2Obj(JsonUtil.obj2String(object), tClass);
     }
 
     //***************************** 操作 List 数据结构 *****************************
@@ -233,17 +233,6 @@ public class RedisService {
      */
     public <T> void setElementAtIndex(final String key, Integer index, T value) {
         redisTemplate.opsForList().set(key, index, value);
-    }
-
-    /**
-     * 获取缓存的 List 对象（全部元素）
-     * @param key Redis 键
-     * @param elementClass 元素类型
-     * @return 返回值
-     * @param <T> 返回值类型
-     */
-    public <T> List<T> getCacheList(final String key, Class<T> elementClass) {
-        return getCacheListByRange(key, 0, -1, elementClass);
     }
 
     /**
