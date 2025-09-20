@@ -6,9 +6,13 @@
 <mapper namespace="com.bitejiuyeke.biteadminservice.map.mapper.RegionMapper">
 
     <select id="selectAllRegion" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
-        select * from sys_region;
+        select * from sys_region order by pinyin;
     </select>
-    
+
+    <select id="selectAllRegionOrderByPinyin" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
+        select * from sys_region order by pinyin;
+    </select>
+
     <select id="selectRegionByIds" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
         select * from sys_region where id in
         <foreach item="id" collection="regionIds" separator="," open="(" close=")">

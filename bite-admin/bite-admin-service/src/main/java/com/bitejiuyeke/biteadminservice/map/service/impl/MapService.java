@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -39,9 +41,11 @@ public class MapService implements IMapService {
 
     @PostConstruct
     public void initService() {
+        // 缓存预热
         try {
-            loadCityList();
+            List<RegionDTO> cityList = loadCityList();
             loadHotCityList();
+            loadCityPinyinMap(cityList);
         } catch (Exception e) {
             log.error("Failed to initService data: ", e);
         }
@@ -57,10 +61,36 @@ public class MapService implements IMapService {
         return loadHotCityList();
     }
 
+    @Override
+    public Map<String, List<RegionDTO>> getCityPinyinMap() {
+        return loadCityPinyinMap(loadCityList());
+    }
+
+    private Map<String, List<RegionDTO>> loadCityPinyinMap(List<RegionDTO> cityList) {
+        return loadRegionInfo(MapConstants.CACHE_MAP_CITY_PINYIN_KEY,
+                MapConstants.CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY, () -> loadCityPinyinMapFromMapper(cityList),
+                new TypeReference<>() {});
+    }
+
+    private Map<String, List<RegionDTO>> loadCityPinyinMapFromMapper(final List<RegionDTO> cityList) {
+        // 从数据库中加载
+        Map<String, List<RegionDTO>> cityPinyinMap = new TreeMap<>(); // 索引速度快
+        for (RegionDTO regionDTO : cityList) {
+            String headLetter = regionDTO.getPinyin().toUpperCase().substring(0, 1);
+            if (!cityPinyinMap.containsKey(headLetter)) {
+                cityPinyinMap.put(headLetter, new ArrayList<>());
+            }
+            cityPinyinMap.get(headLetter).add(regionDTO);
+        }
+        return cityPinyinMap;
+    }
+
     private List<RegionDTO> loadHotCityList() {
         List<Integer> hotCityKeyList = List.of(1, 9, 236, 234, 289, 122);
         return loadRegionInfo(MapConstants.CACHE_MAP_HOT_CITY_KEY,
-                MapConstants.CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY, () -> loadHotCityFromMapper(hotCityKeyList));
+                MapConstants.CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY,
+                () -> loadHotCityFromMapper(hotCityKeyList), new TypeReference<>() {
+                });
     }
 
     private List<RegionDTO> loadHotCityFromMapper(List<Integer> hotCityKeyList) {
@@ -70,7 +100,9 @@ public class MapService implements IMapService {
 
     private List<RegionDTO> loadCityList() {
         return loadRegionInfo(MapConstants.CACHE_MAP_CITY_KEY,
-                MapConstants.CACHE_MAP_CITY_REDISSON_LOCK_KEY, this::loadCityListFromMapper);
+                MapConstants.CACHE_MAP_CITY_REDISSON_LOCK_KEY,
+                this::loadCityListFromMapper, new TypeReference<>() {
+                });
     }
 
     private List<RegionDTO> loadCityListFromMapper() {
@@ -82,16 +114,16 @@ public class MapService implements IMapService {
 
     /**
      * 通过多级缓存和分布式锁机制来防止缓存击穿问题。
+     *  todo: 查看 TypeReference 为什么在方法中使用 TypeReference<T> 的时候会出现 null 的问题，泛型擦除
      *
-     * @param cacheKey      缓存中存放的 key
-     * @param redissonLockKey  分布式锁中存放的 key
-     * @param supplier 函数式接口，传递从数据库加载数据的相关操作
+     * @param cacheKey        缓存中存放的 key
+     * @param redissonLockKey 分布式锁中存放的 key
+     * @param supplier        函数式接口，传递从数据库加载数据的相关操作
      * @return 列表
      */
-    private List<RegionDTO> loadRegionInfo(String cacheKey, String redissonLockKey, Supplier<List<RegionDTO>> supplier) {
+    private <T> T loadRegionInfo(String cacheKey, String redissonLockKey, Supplier<T> supplier, TypeReference<T> typeReference) {
         // 先查看二级缓存，这里不使用互斥锁，保证并发
-        List<RegionDTO> infoList = CacheUtil.getL2Cache(cacheKey, new TypeReference<>() {
-        }, redisService, caffeineCache);
+        T infoList = CacheUtil.getL2Cache(cacheKey, typeReference, redisService, caffeineCache);
         if (infoList != null) {
             return infoList;
         }
@@ -100,8 +132,7 @@ public class MapService implements IMapService {
         try {
             // 先检查二级缓存，保证第一个获取锁的线程在写入二级缓存后，其他的线程可以直接使用缓存
             // 进一步阻止到达数据库的流量，因此再次检查缓存，避免重复加载数据库
-            infoList = CacheUtil.getL2Cache(cacheKey, new TypeReference<>() {
-            }, redisService, caffeineCache);
+            infoList = CacheUtil.getL2Cache(cacheKey, typeReference, redisService, caffeineCache);
             if (infoList != null) {
                 return infoList;
             }
@@ -116,7 +147,7 @@ public class MapService implements IMapService {
             redissonLockService.releaseLock(acquire);
         }
         return infoList;
-    }
 
+    }
 
 }

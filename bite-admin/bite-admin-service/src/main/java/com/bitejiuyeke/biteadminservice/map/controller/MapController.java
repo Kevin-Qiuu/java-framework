@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class MapController implements MapFeignClient {
@@ -33,5 +33,16 @@ public class MapController implements MapFeignClient {
         List<RegionDTO> hotRegionDTOList = mapService.getHotCityList();
         List<RegionVO> hotRegionVOList = BeanCopyUtil.copyListProperties(hotRegionDTOList, RegionVO::new);
         return R.ok(hotRegionVOList);
+    }
+
+    @Override
+    @GetMapping("/map/cityPinyinList")
+    public R<Map<String, List<RegionVO>>> getCityPinyinList() {
+        Map<String, List<RegionDTO>> cityPinyinDTOMap = mapService.getCityPinyinMap();
+        Map<String, List<RegionVO>> cityPinyinVOMap = new TreeMap<>();
+        for (Map.Entry<String, List<RegionDTO>> entry : cityPinyinDTOMap.entrySet()) {
+            cityPinyinVOMap.put(entry.getKey(), BeanCopyUtil.copyListProperties(entry.getValue(), RegionVO::new));
+        }
+        return R.ok(cityPinyinVOMap);
     }
 }

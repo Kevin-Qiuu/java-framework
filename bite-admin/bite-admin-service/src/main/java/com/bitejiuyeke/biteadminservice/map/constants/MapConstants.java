@@ -27,5 +27,14 @@ public class MapConstants {
      */
     public final static String CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY = "map:city:lock:hot";
 
+    /**
+     * 城市列表（根据拼音排序）key
+     */
+    public final static String CACHE_MAP_CITY_PINYIN_KEY = "map:city:pinyin";
+
+    /**
+     * 访问城市列表（根据拼音排序）key
+     */
+    public final static String CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY = "map:city:lock:pinyin";
 
 }
