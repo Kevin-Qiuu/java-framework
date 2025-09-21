@@ -2,7 +2,10 @@ package com.bitejiuyeke.biteadminservice.map.controller;
 
 import com.bitejiuyeke.biteadminapi.map.domain.RegionVO;
 import com.bitejiuyeke.biteadminapi.map.feign.MapFeignClient;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.PoiListDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.RegionDTO;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.SuggestSearchDTO;
+import com.bitejiuyeke.biteadminservice.map.service.IMapProvider;
 import com.bitejiuyeke.biteadminservice.map.service.IMapService;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
@@ -18,6 +21,8 @@ public class MapController implements MapFeignClient {
 
     @Autowired
     private IMapService mapService;
+    @Autowired
+    private IMapProvider mapProvider;
 
     @Override
     @GetMapping("/map/cityList")
@@ -45,4 +50,18 @@ public class MapController implements MapFeignClient {
         }
         return R.ok(cityPinyinVOMap);
     }
+
+    @Override
+    @GetMapping("/map/regionChildrenList")
+    public R<List<RegionVO>> getRegionChildrenList(Long parentId) {
+        List<RegionDTO> regionChildrenDTOList = mapService.getRegionChildrenList(parentId);
+        List<RegionVO> regionChildrenVOList = BeanCopyUtil.copyListProperties(regionChildrenDTOList, RegionVO::new);
+        return R.ok(regionChildrenVOList);
+    }
+
+    @GetMapping("/map/suggestRegionTest")
+    public R<PoiListDTO> getSuggestRegionTest(SuggestSearchDTO suggestSearchDTO) {
+        return R.ok(mapProvider.searchTencentMapPoiByRegion(suggestSearchDTO));
+    }
+
 }

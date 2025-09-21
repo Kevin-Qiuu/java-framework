@@ -1,7 +1,9 @@
 package com.bitejiuyeke.bitecommonsecurity.exception;
 
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import lombok.Data;
 
+@Data
 public class ServiceException extends RuntimeException{
 
     /**

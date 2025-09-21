@@ -3,6 +3,7 @@ package com.bitejiuyeke.bitecommonsecurity.handler;
 import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -29,19 +30,19 @@ public class GlobalExceptionHandler {
     /**
      * 取异常错误码的前三位设置响应http报文的状态码
      *
-     * @param response http响应报文对象
+     * @param response  http响应报文对象
      * @param errorCode 异常错误码（六位）
      */
     private void setResponseCode(HttpServletResponse response, Integer errorCode) {
-        int httpCode = Integer.parseInt(String.valueOf(errorCode).substring(0,3));
+        int httpCode = Integer.parseInt(String.valueOf(errorCode).substring(0, 3));
         response.setStatus(httpCode);
     }
 
     /**
      * 请求方式不支持
      *
-     * @param e 异常信息
-     * @param request 请求 http 报文
+     * @param e        异常信息
+     * @param request  请求 http 报文
      * @param response 响应 http 报文
      * @return 异常结果
      */
@@ -61,8 +62,8 @@ public class GlobalExceptionHandler {
     /**
      * 请求参数类型匹配不一致
      *
-     * @param e 异常信息
-     * @param request 请求 http 报文
+     * @param e        异常信息
+     * @param request  请求 http 报文
      * @param response 响应 http 报文
      * @return 异常结果
      */
@@ -81,8 +82,8 @@ public class GlobalExceptionHandler {
     /**
      * 资源不存在异常（url 不存在）
      *
-     * @param e 异常信息
-     * @param request 请求 http 报文
+     * @param e        异常信息
+     * @param request  请求 http 报文
      * @param response 响应 http 报文
      * @return 异常结果
      */
@@ -133,11 +134,19 @@ public class GlobalExceptionHandler {
                 !retMsg.isBlank() ? retMsg : ResultCode.INVALID_PARA.getMsg());
     }
 
+    @ExceptionHandler({ServiceException.class})
+    public R<?> handlerServiceException(ServiceException e,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) {
+        setResponseCode(response, e.getCode());
+        return R.fail(e.getCode(), e.getMsg());
+    }
+
     /**
      * 拦截运行时异常，为运行时异常进行兜底
      *
-     * @param e 异常信息
-     * @param request 请求 http 报文
+     * @param e        异常信息
+     * @param request  请求 http 报文
      * @param response 响应 http 报文
      * @return 异常结果
      */
@@ -156,8 +165,8 @@ public class GlobalExceptionHandler {
     /**
      * 拦截除上述以外的所有异常，最后的兜底拦截
      *
-     * @param e 异常信息
-     * @param request 请求 http 报文
+     * @param e        异常信息
+     * @param request  请求 http 报文
      * @param response 响应 http 报文
      * @return 异常结果
      */

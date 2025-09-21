@@ -29,5 +29,11 @@ public interface RegionMapper extends BaseMapper<SysRegion> {
      */
     List<SysRegion> selectRegionByIds(@Param("regionIds") List<Integer> regionIds);
 
+    /**
+     * 获取子区域列表
+     * @param parentId 父区域 Id
+     * @return 子区域列表
+     */
+    List<SysRegion> selectRegionByParentId(@Param("parentId") Long parentId);
 
 }

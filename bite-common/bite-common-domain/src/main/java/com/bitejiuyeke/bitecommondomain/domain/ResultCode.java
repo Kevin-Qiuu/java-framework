@@ -139,17 +139,17 @@ public enum ResultCode {
     /**
      * 获取地图数据失败，请稍后重试
      */
-    QQMAP_QUERY_FAILED                        (500006, "获取地图数据失败，请稍后重试"),
+    TencentMAP_QUERY_FAILED                        (500006, "获取地图数据失败，请稍后重试"),
 
     /**
      * 城市信息获取失败
      */
-    QQMAP_CITY_UNKNOW                        (500007, "城市信息获取失败"),
+    TencentMAP_CITY_UNKNOW                        (500007, "城市信息获取失败"),
 
     /**
      * 根据位置获取城市失败
      */
-    QQMAP_LOCATE_FAILED                        (500008, "根据位置获取城市失败"),
+    TencentMAP_LOCATE_FAILED                        (500008, "根据位置获取城市失败"),
 
     /**
      * 地图特性未开启

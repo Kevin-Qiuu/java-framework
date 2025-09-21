@@ -43,9 +43,9 @@ public class MapService implements IMapService {
     public void initService() {
         // 缓存预热
         try {
-            List<RegionDTO> cityList = loadCityList();
+            loadCityList();
             loadHotCityList();
-            loadCityPinyinMap(cityList);
+            loadCityPinyinMap();
         } catch (Exception e) {
             log.error("Failed to initService data: ", e);
         }
@@ -63,17 +63,37 @@ public class MapService implements IMapService {
 
     @Override
     public Map<String, List<RegionDTO>> getCityPinyinMap() {
-        return loadCityPinyinMap(loadCityList());
+        return loadCityPinyinMap();
     }
 
-    private Map<String, List<RegionDTO>> loadCityPinyinMap(List<RegionDTO> cityList) {
+    @Override
+    public List<RegionDTO> getRegionChildrenList(Long parentId) {
+        return loadRegionChildrenList(parentId);
+    }
+
+    public List<RegionDTO> loadRegionChildrenList(Long parentId) {
+        if (parentId == null) {
+            throw new ServiceException(ResultCode.INVALID_PARA);
+        }
+        return loadRegionInfo(MapConstants.CACHE_MAP_REGION_PARENT_KEY + parentId,
+                MapConstants.CACHE_MAP_REGION_PARENT_REDISSON_LOCK_KEY + parentId,
+                () -> loadRegionChildrenFromMapper(parentId), new TypeReference<>() {});
+    }
+
+    private List<RegionDTO> loadRegionChildrenFromMapper(Long parentId) {
+        List<SysRegion> childrenRegion = regionMapper.selectRegionByParentId(parentId);
+        return BeanCopyUtil.copyListProperties(childrenRegion, RegionDTO::new);
+    }
+
+
+    private Map<String, List<RegionDTO>> loadCityPinyinMap() {
         return loadRegionInfo(MapConstants.CACHE_MAP_CITY_PINYIN_KEY,
-                MapConstants.CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY, () -> loadCityPinyinMapFromMapper(cityList),
+                MapConstants.CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY, this::loadCityPinyinMapFromMapper,
                 new TypeReference<>() {});
     }
 
-    private Map<String, List<RegionDTO>> loadCityPinyinMapFromMapper(final List<RegionDTO> cityList) {
-        // 从数据库中加载
+    private Map<String, List<RegionDTO>> loadCityPinyinMapFromMapper() {
+        final List<RegionDTO> cityList = loadCityList();
         Map<String, List<RegionDTO>> cityPinyinMap = new TreeMap<>(); // 索引速度快
         for (RegionDTO regionDTO : cityList) {
             String headLetter = regionDTO.getPinyin().toUpperCase().substring(0, 1);
@@ -86,16 +106,15 @@ public class MapService implements IMapService {
     }
 
     private List<RegionDTO> loadHotCityList() {
-        List<Integer> hotCityKeyList = List.of(1, 9, 236, 234, 289, 122);
+        List<Long> hotCityIdList = List.of(1L, 9L, 236L, 234L, 289L, 122L);
         return loadRegionInfo(MapConstants.CACHE_MAP_HOT_CITY_KEY,
                 MapConstants.CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY,
-                () -> loadHotCityFromMapper(hotCityKeyList), new TypeReference<>() {
+                () -> loadHotCityFromMapper(hotCityIdList), new TypeReference<>() {
                 });
     }
 
-    private List<RegionDTO> loadHotCityFromMapper(List<Integer> hotCityKeyList) {
-        List<SysRegion> sysRegions = regionMapper.selectRegionByIds(hotCityKeyList);
-        return BeanCopyUtil.copyListProperties(sysRegions, RegionDTO::new);
+    private List<RegionDTO> loadHotCityFromMapper(List<Long> hotCityKeyList) {
+        return loadCityList().stream().filter(regionDTO -> hotCityKeyList.contains(regionDTO.getId())).toList();
     }
 
     private List<RegionDTO> loadCityList() {
@@ -115,7 +134,7 @@ public class MapService implements IMapService {
     /**
      * 通过多级缓存和分布式锁机制来防止缓存击穿问题。
      *  todo: 查看 TypeReference 为什么在方法中使用 TypeReference<T> 的时候会出现 null 的问题，泛型擦除
-     *
+     *  todo: 再详细总结泛型擦除
      * @param cacheKey        缓存中存放的 key
      * @param redissonLockKey 分布式锁中存放的 key
      * @param supplier        函数式接口，传递从数据库加载数据的相关操作

@@ -33,8 +33,23 @@ public class MapConstants {
     public final static String CACHE_MAP_CITY_PINYIN_KEY = "map:city:pinyin";
 
     /**
-     * 访问城市列表（根据拼音排序）key
+     * 访问城市列表分布式锁 key
      */
     public final static String CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY = "map:city:lock:pinyin";
+
+    /**
+     * 地区子列表 key
+     */
+    public final static String CACHE_MAP_REGION_PARENT_KEY = "map:region:parentId:";
+
+    /**
+     * 访问地区子列表分布式锁 key
+     */
+    public final static String CACHE_MAP_REGION_PARENT_REDISSON_LOCK_KEY = "map:region:lock:parentId:";
+
+    /**
+     * 腾讯地图关键词输入提示 子域名
+     */
+    public final static String TENCENT_MAP_API_PLACE_SUGGESTION = "/ws/place/v1/suggestion";
 
 }

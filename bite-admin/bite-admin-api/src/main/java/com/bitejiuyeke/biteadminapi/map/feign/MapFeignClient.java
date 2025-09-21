@@ -26,11 +26,19 @@ public interface MapFeignClient {
     R<List<RegionVO>> getHotCityList();
 
     /**
-     * 获取全量城市列表（按拼音 A-Z）
+     * 获取全量城市列表Map（按拼音 A-Z）
      * @return List<RegionVO>
      */
     @GetMapping("/map/cityPinyinList")
     R<Map<String, List<RegionVO>>> getCityPinyinList();
+
+    /**
+     * 获取地区子列表
+     * @param parentId 父区域 Id
+     * @return List<RegionVO>
+     */
+    @GetMapping("/map/regionChildrenList")
+    R<List<RegionVO>> getRegionChildrenList(Long parentId);
 
 
 }
