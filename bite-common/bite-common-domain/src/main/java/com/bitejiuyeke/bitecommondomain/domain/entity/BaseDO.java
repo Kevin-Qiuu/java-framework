@@ -1,4 +1,4 @@
-package com.bitejiuyeke.bitecommoncore.domain.entity;
+package com.bitejiuyeke.bitecommondomain.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

@@ -6,9 +6,9 @@ import lombok.Data;
 public class RegionDTO {
 
     /**
-     * 区域 Id
+     * 区域 code
      */
-    private Long id;
+    private String code;
 
     /**
      * 区域名称
@@ -21,9 +21,9 @@ public class RegionDTO {
     private String fullName;
 
     /**
-     * 父级区域列表
+     * 父级区域 code
      */
-    private Long parentId;
+    private Integer parentCode;
 
     /**
      * 区域名称拼音

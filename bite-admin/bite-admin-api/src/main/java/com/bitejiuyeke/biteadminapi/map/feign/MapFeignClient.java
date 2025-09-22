@@ -1,10 +1,19 @@
 package com.bitejiuyeke.biteadminapi.map.feign;
 
 
-import com.bitejiuyeke.biteadminapi.map.domain.RegionVO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionCityVO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.SearchPoiVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
-import org.springframework.cloud.openfeign.FeignClient;
+import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -34,11 +43,26 @@ public interface MapFeignClient {
 
     /**
      * 获取地区子列表
-     * @param parentId 父区域 Id
+     * @param parentCode 父区域 Id
      * @return List<RegionVO>
      */
     @GetMapping("/map/regionChildrenList")
-    R<List<RegionVO>> getRegionChildrenList(Long parentId);
+    R<List<RegionVO>> getRegionChildrenList(@RequestParam String parentCode);
 
+    /**
+     * 根据关键词查询某一地点的相关 poi
+     * @param SearchPoiReqDTO 查询 dto
+     * @return 分页列表
+     */
+    @PostMapping("/map/search")
+    R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@Validated @RequestBody SearchPoiReqDTO SearchPoiReqDTO);
+
+    /**
+     * 根据经纬度来逆地址解析
+     * @param locationDTO 经纬度
+     * @return 城市信息
+     */
+    @PostMapping("/map/locateCityByLocation")
+    R<RegionCityVO> locateCityByLocation(LocationDTO locationDTO);
 
 }

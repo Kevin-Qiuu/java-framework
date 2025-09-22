@@ -1,14 +1,19 @@
 package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageReqDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-public class SuggestSearchDTO {
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+public class SuggestSearchDTO extends BasePageReqDTO {
 
     /**
-     * 区域名称（限制城市）
+     * 区域 code（限制城市）
      */
-    private String region;
+    private String code;
 
     /**
      * 搜索关键词

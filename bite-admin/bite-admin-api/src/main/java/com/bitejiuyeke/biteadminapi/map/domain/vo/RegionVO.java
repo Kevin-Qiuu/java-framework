@@ -1,4 +1,4 @@
-package com.bitejiuyeke.biteadminapi.map.domain;
+package com.bitejiuyeke.biteadminapi.map.domain.vo;
 
 import lombok.Data;
 
@@ -6,9 +6,9 @@ import lombok.Data;
 public class RegionVO {
 
     /**
-     * 区域 Id
+     * 区域 code
      */
-    private Long id;
+    private String code;
 
     /**
      * 区域名称
@@ -23,7 +23,7 @@ public class RegionVO {
     /**
      * 父级区域列表
      */
-    private Long parentId;
+    private String parentCode;
 
     /**
      * 区域名称拼音

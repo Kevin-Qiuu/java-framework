@@ -1,7 +1,7 @@
 package com.bitejiuyeke.biteadminservice.map.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.bitejiuyeke.bitecommoncore.domain.entity.BaseDO;
+import com.bitejiuyeke.bitecommondomain.domain.entity.BaseDO;
 import lombok.Data;
 
 @Data
@@ -15,6 +15,11 @@ public class SysRegion extends BaseDO {
     private String name;
 
     /**
+     * 区域 code
+     */
+    private String code;
+
+    /**
      * 区域全称
      */
     private String fullName;
@@ -22,7 +27,7 @@ public class SysRegion extends BaseDO {
     /**
      * 父级区域列表
      */
-    private Long parentId;
+    private String parentCode;
 
     /**
      * 区域名称拼音

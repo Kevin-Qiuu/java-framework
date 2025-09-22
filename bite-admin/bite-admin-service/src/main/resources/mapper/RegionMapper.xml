@@ -20,7 +20,7 @@
         </foreach>
     </select>
 
-    <select id="selectRegionByParentId" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
-        select * from sys_region where parent_id = #{parentId};
+    <select id="selectRegionByParentCode" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
+        select * from sys_region where parent_code = #{parentCode};
     </select>
 </mapper>

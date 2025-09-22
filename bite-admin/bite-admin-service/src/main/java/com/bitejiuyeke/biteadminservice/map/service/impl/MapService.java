@@ -1,13 +1,22 @@
 package com.bitejiuyeke.biteadminservice.map.service.impl;
 
+import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
 import com.bitejiuyeke.biteadminservice.map.constants.MapConstants;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.GeoResultDTO;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.PoiListDTO;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.SuggestSearchDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion;
 import com.bitejiuyeke.biteadminservice.map.mapper.RegionMapper;
+import com.bitejiuyeke.biteadminservice.map.service.IMapProvider;
 import com.bitejiuyeke.biteadminservice.map.service.IMapService;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.RegionDTO;
 import com.bitejiuyeke.bitecommoncache.utils.CacheUtil;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
+import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommonredis.service.RedisService;
 import com.bitejiuyeke.bitecommonredis.service.RedissonLockService;
 import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
@@ -18,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +48,8 @@ public class MapService implements IMapService {
     private Cache<String, Object> caffeineCache;
     @Autowired
     private RedissonLockService redissonLockService;
+    @Autowired
+    private IMapProvider mapProvider;
 
     @PostConstruct
     public void initService() {
@@ -67,21 +79,52 @@ public class MapService implements IMapService {
     }
 
     @Override
-    public List<RegionDTO> getRegionChildrenList(Long parentId) {
-        return loadRegionChildrenList(parentId);
+    public List<RegionDTO> getRegionChildrenList(String parentCode) {
+        return loadRegionChildrenList(parentCode);
     }
 
-    public List<RegionDTO> loadRegionChildrenList(Long parentId) {
-        if (parentId == null) {
+    @Override
+    public BasePageDTO<SearchPoiDTO> searchSuggestOnMap(SearchPoiReqDTO searchPoiDTO) {
+        // 请求体参数类型转换
+        SuggestSearchDTO suggestSearchDTO = new SuggestSearchDTO();
+        BeanCopyUtil.copyProperties(searchPoiDTO, suggestSearchDTO);
+        // 2. 发送请求
+        PoiListDTO poiListDTO = mapProvider.searchTencentMapPoiByRegion(suggestSearchDTO);
+        // 响应体参数类型转换
+        BasePageDTO<SearchPoiDTO> basePageDTO = new BasePageDTO<>();
+        basePageDTO.setTotals(poiListDTO.getCount());
+        basePageDTO.setTotalPages(BasePageDTO.calculateTotalPages(basePageDTO.getTotals(), searchPoiDTO.getPageSize()));
+        List<SearchPoiDTO> searchPoiDTOS = BeanCopyUtil.copyListProperties(poiListDTO.getData(), SearchPoiDTO::new);
+        for (int i = 0; i < searchPoiDTOS.size(); i++) {
+            searchPoiDTOS.get(i).setLatitude(poiListDTO.getData().get(i).getLocation().getLat());
+            searchPoiDTOS.get(i).setLongitude(poiListDTO.getData().get(i).getLocation().getLng());
+        }
+        basePageDTO.setList(searchPoiDTOS);
+        return basePageDTO;
+    }
+
+    @Override
+    public RegionDTO locateCityByLocation(LocationDTO locationDTO) {
+        GeoResultDTO geoResultDTO = mapProvider.geoCoderTencentMap(locationDTO);
+        String cityCode = geoResultDTO.getResult().getAd_info().getAdcode().substring(0,4) + "00";
+        List<RegionDTO> list = loadCityList().stream().filter(regionDTO -> regionDTO.getCode().equals(String.valueOf(cityCode))).toList();
+        if (list.isEmpty()) {
+            throw new ServiceException(ResultCode.TencentMAP_CITY_UNKNOW);
+        }
+        return list.get(0);
+    }
+
+    public List<RegionDTO> loadRegionChildrenList(String parentCode) {
+        if (!StringUtils.hasText(parentCode)) {
             throw new ServiceException(ResultCode.INVALID_PARA);
         }
-        return loadRegionInfo(MapConstants.CACHE_MAP_REGION_PARENT_KEY + parentId,
-                MapConstants.CACHE_MAP_REGION_PARENT_REDISSON_LOCK_KEY + parentId,
-                () -> loadRegionChildrenFromMapper(parentId), new TypeReference<>() {});
+        return loadRegionInfo(MapConstants.CACHE_MAP_REGION_PARENT_KEY + parentCode,
+                MapConstants.CACHE_MAP_REGION_PARENT_REDISSON_LOCK_KEY + parentCode,
+                () -> loadRegionChildrenFromMapper(parentCode), new TypeReference<>() {});
     }
 
-    private List<RegionDTO> loadRegionChildrenFromMapper(Long parentId) {
-        List<SysRegion> childrenRegion = regionMapper.selectRegionByParentId(parentId);
+    private List<RegionDTO> loadRegionChildrenFromMapper(String parentCode) {
+        List<SysRegion> childrenRegion = regionMapper.selectRegionByParentCode(parentCode);
         return BeanCopyUtil.copyListProperties(childrenRegion, RegionDTO::new);
     }
 
@@ -106,16 +149,13 @@ public class MapService implements IMapService {
     }
 
     private List<RegionDTO> loadHotCityList() {
-        List<Long> hotCityIdList = List.of(1L, 9L, 236L, 234L, 289L, 122L);
         return loadRegionInfo(MapConstants.CACHE_MAP_HOT_CITY_KEY,
                 MapConstants.CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY,
-                () -> loadHotCityFromMapper(hotCityIdList), new TypeReference<>() {
-                });
+                () -> loadCityList().stream().filter(regionDTO ->
+                        MapConstants.CACHE_MAP_CITY_HOT_REGION_CODE.contains(regionDTO.getCode())).toList(),
+                new TypeReference<>() {});
     }
 
-    private List<RegionDTO> loadHotCityFromMapper(List<Long> hotCityKeyList) {
-        return loadCityList().stream().filter(regionDTO -> hotCityKeyList.contains(regionDTO.getId())).toList();
-    }
 
     private List<RegionDTO> loadCityList() {
         return loadRegionInfo(MapConstants.CACHE_MAP_CITY_KEY,

@@ -1,5 +1,6 @@
 package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
+import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
 import lombok.Data;
 
 @Data

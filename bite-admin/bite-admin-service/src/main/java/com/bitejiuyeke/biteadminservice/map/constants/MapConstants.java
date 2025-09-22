@@ -1,5 +1,7 @@
 package com.bitejiuyeke.biteadminservice.map.constants;
 
+import java.util.List;
+
 public class MapConstants {
 
     /**
@@ -16,6 +18,11 @@ public class MapConstants {
      * 访问城市列表分布式锁 key
      */
     public final static String CACHE_MAP_CITY_REDISSON_LOCK_KEY = "map:city:lock:id";
+
+    /**
+     * 热门城市 region code
+     */
+    public final static List<String> CACHE_MAP_CITY_HOT_REGION_CODE = List.of("110000", "310000", "440100", "440300", "30100", "510100","370200");
 
     /**
      * 热门城市缓存 key
@@ -51,5 +58,7 @@ public class MapConstants {
      * 腾讯地图关键词输入提示 子域名
      */
     public final static String TENCENT_MAP_API_PLACE_SUGGESTION = "/ws/place/v1/suggestion";
+
+    public final static String TENCENT_MAP_APT_GEO_CODER = "/ws/geocoder/v1";
 
 }

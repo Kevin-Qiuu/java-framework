@@ -1,18 +1,22 @@
 package com.bitejiuyeke.biteadminservice.map.controller;
 
-import com.bitejiuyeke.biteadminapi.map.domain.RegionVO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionCityVO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.SearchPoiVO;
 import com.bitejiuyeke.biteadminapi.map.feign.MapFeignClient;
-import com.bitejiuyeke.biteadminservice.map.domain.dto.PoiListDTO;
-import com.bitejiuyeke.biteadminservice.map.domain.dto.RegionDTO;
-import com.bitejiuyeke.biteadminservice.map.domain.dto.SuggestSearchDTO;
+import com.bitejiuyeke.biteadminservice.map.domain.dto.*;
 import com.bitejiuyeke.biteadminservice.map.service.IMapProvider;
 import com.bitejiuyeke.biteadminservice.map.service.IMapService;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
+import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -53,15 +57,29 @@ public class MapController implements MapFeignClient {
 
     @Override
     @GetMapping("/map/regionChildrenList")
-    public R<List<RegionVO>> getRegionChildrenList(Long parentId) {
-        List<RegionDTO> regionChildrenDTOList = mapService.getRegionChildrenList(parentId);
+    public R<List<RegionVO>> getRegionChildrenList(@RequestParam String parentCode) {
+        List<RegionDTO> regionChildrenDTOList = mapService.getRegionChildrenList(parentCode);
         List<RegionVO> regionChildrenVOList = BeanCopyUtil.copyListProperties(regionChildrenDTOList, RegionVO::new);
         return R.ok(regionChildrenVOList);
     }
 
-    @GetMapping("/map/suggestRegionTest")
-    public R<PoiListDTO> getSuggestRegionTest(SuggestSearchDTO suggestSearchDTO) {
-        return R.ok(mapProvider.searchTencentMapPoiByRegion(suggestSearchDTO));
+    @Override
+    @PostMapping("/map/search")
+    public R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@Validated @RequestBody SearchPoiReqDTO searchPoiDTO) {
+        BasePageDTO<SearchPoiDTO> basePageDTO = mapService.searchSuggestOnMap(searchPoiDTO);
+        BasePageVO<SearchPoiVO> basePageVO = new BasePageVO<>();
+        BeanCopyUtil.copyProperties(basePageDTO, basePageVO);
+        List<SearchPoiVO> searchPoiVOList = BeanCopyUtil.copyListProperties(basePageDTO.getList(), SearchPoiVO::new);
+        basePageVO.setList(searchPoiVOList);
+        return R.ok(basePageVO);
     }
 
+    @Override
+    @PostMapping("/map/locateCityByLocation")
+    public R<RegionCityVO> locateCityByLocation(@Validated @RequestBody LocationDTO locationDTO) {
+       RegionDTO regionDTO = mapService.locateCityByLocation(locationDTO);
+       RegionCityVO regionCityVO = new RegionCityVO();
+       BeanCopyUtil.copyProperties(regionDTO, regionCityVO);
+       return R.ok(regionCityVO);
+    }
 }

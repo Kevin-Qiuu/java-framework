@@ -1,7 +1,6 @@
 package com.bitejiuyeke.bitemstemplateservice.mapTest;
 
-import com.bitejiuyeke.biteadminapi.map.domain.RegionVO;
-import com.bitejiuyeke.biteadminapi.map.feign.MapFeignClient;
+import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitemstemplateservice.feign.RemoteMapClient;
 import org.springframework.beans.factory.annotation.Autowired;
