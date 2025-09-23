@@ -35,8 +35,8 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
             return Mono.error(ex);
         }
 
-        Integer retCode = ResultCode.ERROR_CODE.getCode();
-        String retMsg = ResultCode.ERROR_CODE.getMsg();
+        Integer retCode = ResultCode.ERROR.getCode();
+        String retMsg = ResultCode.ERROR.getMsg();
         if (ex instanceof NoResourceFoundException) {
             retCode = ResultCode.SERVICE_NOT_FOUND.getCode();
             retMsg = ResultCode.SERVICE_NOT_FOUND.getMsg();

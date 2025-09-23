@@ -138,8 +138,10 @@ public class GlobalExceptionHandler {
     public R<?> handlerServiceException(ServiceException e,
                                         HttpServletRequest request,
                                         HttpServletResponse response) {
-        setResponseCode(response, e.getCode());
-        return R.fail(e.getCode(), e.getMsg());
+        Integer code = e.getCode() == null ? ResultCode.ERROR.getCode() : e.getCode();
+        String msg = e.getMsg() == null ? ResultCode.ERROR.getMsg() : e.getMsg();
+        setResponseCode(response, code);
+        return R.fail(code, msg);
     }
 
     /**
@@ -177,7 +179,7 @@ public class GlobalExceptionHandler {
         String requestURI = request.getRequestURI();
         log.error("请求地址：{}，异常：", requestURI, e);
 
-        setResponseCode(response, ResultCode.ERROR_CODE.getCode());
+        setResponseCode(response, ResultCode.ERROR.getCode());
         return R.fail();
     }
 
