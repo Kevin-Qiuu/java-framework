@@ -25,8 +25,6 @@ public class MapController implements MapFeignClient {
 
     @Autowired
     private IMapService mapService;
-    @Autowired
-    private IMapProvider mapProvider;
 
     @Override
     @GetMapping("/map/cityList")
