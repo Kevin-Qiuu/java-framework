@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class DicDataAddReqDTO {
+public class DicDataWriteReqDTO {
 
     /**
      * 字典数据的类型键

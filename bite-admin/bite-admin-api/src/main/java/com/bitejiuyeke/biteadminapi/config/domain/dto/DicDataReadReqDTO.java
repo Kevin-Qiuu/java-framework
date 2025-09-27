@@ -18,7 +18,6 @@ public class DicDataReadReqDTO extends BasePageReqDTO {
     /**
      * 字典数据名称
      */
-    @NotBlank(message = "字典类型值为空！")
     private String value;
 
 }
