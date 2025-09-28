@@ -1,8 +1,9 @@
 package com.bitejiuyeke.bitemstemplateservice.mapTest;
 
 import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
+import com.bitejiuyeke.biteadminapi.map.feign.MapFeignClient;
 import com.bitejiuyeke.bitecommondomain.domain.R;
-import com.bitejiuyeke.bitemstemplateservice.feign.RemoteMapClient;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import java.util.List;
 public class TestMapController {
 
     @Autowired
-    private RemoteMapClient mapFeignClient;
+    private MapFeignClient mapFeignClient;
 
     @GetMapping("/cityList")
     public R<List<RegionVO>> getCityList() {

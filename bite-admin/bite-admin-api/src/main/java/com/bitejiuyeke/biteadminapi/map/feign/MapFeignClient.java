@@ -2,13 +2,14 @@ package com.bitejiuyeke.biteadminapi.map.feign;
 
 
 import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
-import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionCityVO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.SearchPoiVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Map;
 
+@ConditionalOnProperty(name = "feign.bite-admin.feignEnabled", havingValue = "true")
+@FeignClient(name = "bite-admin")
 public interface MapFeignClient {
 
     /**

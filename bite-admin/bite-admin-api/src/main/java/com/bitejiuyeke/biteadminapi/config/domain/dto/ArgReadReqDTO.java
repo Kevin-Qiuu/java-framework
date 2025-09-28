@@ -1,22 +1,21 @@
 package com.bitejiuyeke.biteadminapi.config.domain.dto;
 
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageReqDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class DicDataReadReqDTO extends BasePageReqDTO {
+public class ArgReadReqDTO extends BasePageReqDTO {
 
     /**
-     * 字典类型键
+     * 参数名称
      */
-    private String typeKey;
+    private String name;
 
     /**
-     * 字典数据名称
+     * 参数键名
      */
-    private String value;
+    private String configKey;
 
 }

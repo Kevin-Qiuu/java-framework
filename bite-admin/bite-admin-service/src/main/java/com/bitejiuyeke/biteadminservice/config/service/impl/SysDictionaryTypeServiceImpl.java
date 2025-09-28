@@ -52,7 +52,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         Page<SysDictionaryType> page = new Page<>(dicTypeReadReqDTO.getPageIndex(), dicTypeReadReqDTO.getPageSize());
 
         // 构建查询条件
-        LambdaQueryWrapper<SysDictionaryType> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<SysDictionaryType> queryWrapper = new LambdaQueryWrapper<SysDictionaryType>().select();
 
         // 添加查询条件
         if (StringUtil.isNotBlank(dicTypeReadReqDTO.getTypeKey())) {
@@ -79,7 +79,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
 
         // 判断这个类型是否存在
         SysDictionaryType sysDictionaryType = sysDictionaryTypeMapper.selectOne(
-                new LambdaQueryWrapper<SysDictionaryType>()
+                new LambdaQueryWrapper<SysDictionaryType>().select(SysDictionaryType::getTypeKey)
                         .eq(SysDictionaryType::getTypeKey, dicTypeWriteReqDTO.getTypeKey()));
         if (sysDictionaryType == null) {
             throw new ServiceException("所要修改的类型键不存在！");
@@ -87,6 +87,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
 
         // 存在判断该字典类型值是否已经被使用了
         if (sysDictionaryTypeMapper.selectOne(new LambdaQueryWrapper<SysDictionaryType>()
+                .select(SysDictionaryType::getTypeKey)
                 .ne(SysDictionaryType::getTypeKey, dicTypeWriteReqDTO.getTypeKey())
                 .eq(SysDictionaryType::getValue, dicTypeWriteReqDTO.getValue())) != null) {
             throw new ServiceException("所要使用的类型值已经存在！");
@@ -104,12 +105,14 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     public Long addDictionaryData(DicDataWriteReqDTO dicDataWriteReqDTO) {
         // 判断字典数据类型是否存在
         if (!sysDictionaryTypeMapper.exists(new LambdaQueryWrapper<SysDictionaryType>()
+                .select(SysDictionaryType::getTypeKey)
                 .eq(SysDictionaryType::getTypeKey, dicDataWriteReqDTO.getTypeKey()))) {
             throw new ServiceException("新增字典数据所对应的字典类型不存在！");
         }
 
         // 存在的话判断字典数据键值是否存在
         if (sysDictionaryDataMapper.exists(new LambdaQueryWrapper<SysDictionaryData>()
+                .select(SysDictionaryData::getDataKey)
                 .eq(SysDictionaryData::getDataKey, dicDataWriteReqDTO.getDataKey())
                 .or()
                 .eq(SysDictionaryData::getValue, dicDataWriteReqDTO.getValue()))) {
@@ -126,20 +129,18 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
 
     @Override
     public BasePageDTO<DicDataDTO> getDictionaryDataList(DicDataReadReqDTO dicDataReadReqDTO) {
-        LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
-        typeQuery.select().eq(SysDictionaryType::getTypeKey, dicDataReadReqDTO.getTypeKey());
+        LambdaQueryWrapper<SysDictionaryData> dataQuery = new LambdaQueryWrapper<SysDictionaryData>().select();
 
-        if (!sysDictionaryTypeMapper.exists(typeQuery)) {
-            throw new ServiceException("当前的字典类型键不存在！");
+        if (StringUtil.isNotBlank(dicDataReadReqDTO.getTypeKey())) {
+            dataQuery.eq(SysDictionaryData::getTypeKey, dicDataReadReqDTO.getTypeKey());
         }
-
-        LambdaQueryWrapper<SysDictionaryData> dataQuery = new LambdaQueryWrapper<>();
-        dataQuery.select().eq(SysDictionaryData::getTypeKey, dicDataReadReqDTO.getTypeKey());
         if (StringUtil.isNotBlank(dicDataReadReqDTO.getValue())) {
             dataQuery.like(SysDictionaryData::getValue, dicDataReadReqDTO.getValue());
         }
+
         dataQuery.orderByAsc(SysDictionaryData::getSort);
         dataQuery.orderByAsc(SysDictionaryData::getId);
+
         Page<SysDictionaryData> dataPage = sysDictionaryDataMapper.selectPage
                 (new Page<>(dicDataReadReqDTO.getPageIndex(), dicDataReadReqDTO.getPageSize()), dataQuery);
         BasePageDTO<DicDataDTO> basePageDTO = new BasePageDTO<>();
@@ -155,14 +156,15 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     public Long editDictionaryData(DicDataWriteReqDTO dicDataWriteReqDTO) {
         // 判断字典类型是否存在
         LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
-        typeQuery.select().eq(SysDictionaryType::getTypeKey, dicDataWriteReqDTO.getTypeKey());
+        typeQuery.select(SysDictionaryType::getTypeKey).eq(SysDictionaryType::getTypeKey, dicDataWriteReqDTO.getTypeKey());
         if (!sysDictionaryTypeMapper.exists(typeQuery)) {
             throw new ServiceException("当前的字典类型键不存在！");
         }
 
         // 判断字典键值是否存在
         LambdaQueryWrapper<SysDictionaryData> dataQuery = new LambdaQueryWrapper<>();
-        dataQuery.select().eq(SysDictionaryData::getTypeKey, dicDataWriteReqDTO.getTypeKey())
+        dataQuery.select(SysDictionaryData::getTypeKey)
+                .eq(SysDictionaryData::getTypeKey, dicDataWriteReqDTO.getTypeKey())
                 .eq(SysDictionaryData::getDataKey, dicDataWriteReqDTO.getDataKey());
         SysDictionaryData sysDictionaryData = sysDictionaryDataMapper.selectOne(dataQuery);
         if (!sysDictionaryDataMapper.exists(dataQuery)) {
@@ -182,7 +184,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     @Override
     public List<DicDataDTO> selectDicDataByTypeKey(String typeKey) {
         LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
-        typeQuery.select().eq(SysDictionaryType::getTypeKey, typeKey);
+        typeQuery.select(SysDictionaryType::getTypeKey).eq(SysDictionaryType::getTypeKey, typeKey);
         if (!sysDictionaryTypeMapper.exists(typeQuery)) {
             throw new ServiceException("当前的字典类型键不存在！");
         }
@@ -198,8 +200,8 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         Map<String, List<DicDataDTO>> dicDataDTOMap = new HashMap<>();
         List<SysDictionaryData> selectList = sysDictionaryDataMapper
                 .selectList(new LambdaQueryWrapper<SysDictionaryData>()
-                .select().in(SysDictionaryData::getTypeKey, typeKeys));
-        for (SysDictionaryData sysDictionaryData: selectList) {
+                        .in(SysDictionaryData::getTypeKey, typeKeys));
+        for (SysDictionaryData sysDictionaryData : selectList) {
             if (!dicDataDTOMap.containsKey(sysDictionaryData.getTypeKey())) {
                 dicDataDTOMap.put(sysDictionaryData.getTypeKey(), new ArrayList<>());
             }
@@ -210,7 +212,25 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         return dicDataDTOMap;
     }
 
+    // todo: test
+    @Override
+    public DicDataDTO selectDicDataByDataKey(String dataKey) {
+        DicDataDTO dicDataDTO = new DicDataDTO();
+        SysDictionaryData sysDictionaryData = sysDictionaryDataMapper
+                .selectOne(new LambdaQueryWrapper<SysDictionaryData>()
+                        .eq(SysDictionaryData::getDataKey, dataKey));
+        if (sysDictionaryData == null)
+            return null;
+        BeanCopyUtil.copyProperties(sysDictionaryData, dicDataDTO);
+        return dicDataDTO;
+    }
 
-
-
+    // todo: test
+    @Override
+    public List<DicDataDTO> selectDicDataByDataKeys(List<String> dataKeys) {
+        List<SysDictionaryData> selectList = sysDictionaryDataMapper
+                .selectList(new LambdaQueryWrapper<SysDictionaryData>()
+                        .in(SysDictionaryData::getDataKey, dataKeys));
+        return BeanCopyUtil.copyListProperties(selectList, DicDataDTO::new);
+    }
 }

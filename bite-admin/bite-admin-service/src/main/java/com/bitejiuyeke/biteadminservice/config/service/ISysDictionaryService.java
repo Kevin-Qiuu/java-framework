@@ -64,4 +64,18 @@ public interface ISysDictionaryService {
      */
     Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(List<String> typeKeys);
 
+    /**
+     * 根据一个字数据键查询对应的字典数据
+     * @param dataKey 字典数据键
+     * @return 字典数据
+     */
+    DicDataDTO selectDicDataByDataKey(String dataKey);
+
+    /**
+     * 根据多个字典数据键查询对应的字典数据
+     * @param dataKeys 字典数据键集合
+     * @return 字典数据的 List
+     */
+    List<DicDataDTO> selectDicDataByDataKeys(List<String> dataKeys);
+
 }

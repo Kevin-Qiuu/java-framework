@@ -4,7 +4,7 @@ import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import lombok.Data;
 
 @Data
-public class ServiceException extends RuntimeException{
+public class ServiceException extends RuntimeException {
 
     /**
      * 响应码
@@ -45,4 +45,8 @@ public class ServiceException extends RuntimeException{
     }
 
 
+    public ServiceException(String message, int code) {
+        this.msg = message;
+        this.code = code;
+    }
 }

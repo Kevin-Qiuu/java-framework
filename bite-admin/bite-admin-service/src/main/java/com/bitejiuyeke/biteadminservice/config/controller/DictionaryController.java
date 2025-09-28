@@ -9,6 +9,7 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 新增字典类型
+     *
      * @param dicTypeWriteReqDTO 写字典类型请求体
      * @return 新增字典 id
      */
@@ -39,11 +41,12 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 获取字典类型列表
+     *
      * @param dicTypeReadReqDTO 读字典类型请求体
      * @return 翻页列表
      */
     @GetMapping("/dictionaryType/list")
-    public R<BasePageVO<DicTypeVO>> getDictionaryTypeList(@RequestBody DicTypeReadReqDTO dicTypeReadReqDTO){
+    public R<BasePageVO<DicTypeVO>> getDictionaryTypeList(@RequestBody DicTypeReadReqDTO dicTypeReadReqDTO) {
         BasePageDTO<DicTypeDTO> basePageDTO = sysDictionaryService.getDictionaryTypeList(dicTypeReadReqDTO);
         BasePageVO<DicTypeVO> basePageVO = new BasePageVO<>();
         BeanCopyUtil.copyProperties(basePageDTO, basePageVO);
@@ -54,6 +57,7 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 编辑字典类型数据
+     *
      * @param dicTypeWriteReqDTO 写字典类型请求体
      * @return 编辑字典类型 Id
      */
@@ -65,6 +69,7 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 新增字典数据
+     *
      * @param dicDataWriteReqDTO 写字典数据请求体
      * @return 新增字典数据 Id
      */
@@ -76,6 +81,7 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 查询字典类型值
+     *
      * @param dicDataReadReqDTO 读字典类型值请求体
      * @return 翻页列表
      */
@@ -90,6 +96,7 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 编辑字典数据
+     *
      * @param dicDataWriteReqDTO 写字典数据请求体
      * @return 编辑的字典数据 id
      */
@@ -101,28 +108,66 @@ public class DictionaryController implements DictionaryFeignClient {
 
     /**
      * 根据一个字典类型键查询所有的字典数据
+     *
      * @param typeKey 字典类型键（非空）
      * @return 字典数据的 list
      */
     @Override
-    public R<List<DicDataVO>> selectDicDataByTypeKey(String typeKey) {
+    @GetMapping("/dictionaryData/typeKey")
+    public R<List<DicDataVO>> selectDicDataByTypeKey(@NotBlank(message = "字典类型键为空！") String typeKey) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByTypeKey(typeKey);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
 
     /**
      * 根据多个字典类型键查询所有的字典数据
+     *
      * @param typeKeys 字典类型键集合（非空）
-     * @return 字典数据的 list
+     * @return 字典类型键：字典数据
      */
     @Override
-    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(List<String> typeKeys) {
+    @GetMapping("/dictionaryData/typeKeys")
+    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody
+                                                                   @NotBlank(message = "字典类型键列表为空或者有空值！")
+                                                                   List<String> typeKeys) {
         Map<String, List<DicDataDTO>> dicDataDTOMap = sysDictionaryService.selectDicDataByTypeKeys(typeKeys);
         Map<String, List<DicDataVO>> dicDataVOMap = new HashMap<>();
-        for (Map.Entry<String, List<DicDataDTO>> entry: dicDataDTOMap.entrySet()) {
+        for (Map.Entry<String, List<DicDataDTO>> entry : dicDataDTOMap.entrySet()) {
             dicDataVOMap.put(entry.getKey(),
                     BeanCopyUtil.copyListProperties(entry.getValue(), DicDataVO::new));
         }
         return R.ok(dicDataVOMap);
+    }
+
+    /**
+     * 根据一个字数据键查询对应的字典数据
+     *
+     * @param dataKey 字典数据键
+     * @return 字典数据
+     */
+    @Override
+    @GetMapping("/dictionaryData/dataKey")
+    public R<DicDataVO> selectDicDataByDataKey(@NotBlank(message = "字典数据键为空！") String dataKey) {
+        DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(dataKey);
+        if (dicDataDTO == null)
+            return R.ok(null);
+        DicDataVO dicDataVO = new DicDataVO();
+        BeanCopyUtil.copyProperties(dicDataDTO, dicDataVO);
+        return R.ok(dicDataVO);
+    }
+
+    /**
+     * 根据多个字典数据键查询对应的字典数据
+     *
+     * @param dataKeys 字典数据键集合
+     * @return 字典数据的 List
+     */
+    @Override
+    @GetMapping("/dictionaryData/dataKeys")
+    public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody
+                                                      @NotBlank(message = "字典类型键列表为空或者有空值！")
+                                                      List<String> dataKeys) {
+        List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKeys(dataKeys);
+        return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
 }
