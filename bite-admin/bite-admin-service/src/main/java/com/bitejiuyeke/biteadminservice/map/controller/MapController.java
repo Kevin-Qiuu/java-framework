@@ -54,8 +54,8 @@ public class MapController implements MapFeignClient {
     }
 
     @Override
-    @GetMapping("/map/regionChildrenList")
-    public R<List<RegionVO>> getRegionChildrenList(@RequestParam String parentCode) {
+    @GetMapping("/map/regionChildrenList/{parentCode}")
+    public R<List<RegionVO>> getRegionChildrenList(@PathVariable("parentCode") String parentCode){
         List<RegionDTO> regionChildrenDTOList = mapService.getRegionChildrenList(parentCode);
         List<RegionVO> regionChildrenVOList = BeanCopyUtil.copyListProperties(regionChildrenDTOList, RegionVO::new);
         return R.ok(regionChildrenVOList);

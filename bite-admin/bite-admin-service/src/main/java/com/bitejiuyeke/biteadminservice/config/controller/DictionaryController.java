@@ -12,10 +12,7 @@ import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +42,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicTypeReadReqDTO 读字典类型请求体
      * @return 翻页列表
      */
-    @GetMapping("/dictionaryType/list")
+    @PostMapping("/dictionaryType/list")
     public R<BasePageVO<DicTypeVO>> getDictionaryTypeList(@RequestBody DicTypeReadReqDTO dicTypeReadReqDTO) {
         BasePageDTO<DicTypeDTO> basePageDTO = sysDictionaryService.getDictionaryTypeList(dicTypeReadReqDTO);
         BasePageVO<DicTypeVO> basePageVO = new BasePageVO<>();
@@ -85,8 +82,8 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicDataReadReqDTO 读字典类型值请求体
      * @return 翻页列表
      */
-    @GetMapping("/dictionaryData/list")
-    public R<BasePageVO<DicDataVO>> getDictionaryDataList(DicDataReadReqDTO dicDataReadReqDTO) {
+    @PostMapping("/dictionaryData/list")
+    public R<BasePageVO<DicDataVO>> getDictionaryDataList(@RequestBody DicDataReadReqDTO dicDataReadReqDTO) {
         BasePageDTO<DicDataDTO> basePageDTO = sysDictionaryService.getDictionaryDataList(dicDataReadReqDTO);
         BasePageVO<DicDataVO> basePageVO = new BasePageVO<>();
         BeanCopyUtil.copyProperties(basePageDTO, basePageVO);
@@ -113,8 +110,9 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据的 list
      */
     @Override
-    @GetMapping("/dictionaryData/typeKey")
-    public R<List<DicDataVO>> selectDicDataByTypeKey(@NotBlank(message = "字典类型键为空！") String typeKey) {
+    @GetMapping("/dictionaryData/typeKey/{typeKey}")
+    public R<List<DicDataVO>> selectDicDataByTypeKey(@PathVariable("typeKey")
+                                                     @NotBlank(message = "字典类型键为空！") String typeKey) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByTypeKey(typeKey);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
@@ -126,7 +124,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典类型键：字典数据
      */
     @Override
-    @GetMapping("/dictionaryData/typeKeys")
+    @PostMapping("/dictionaryData/typeKeys")
     public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody
                                                                    @NotBlank(message = "字典类型键列表为空或者有空值！")
                                                                    List<String> typeKeys) {
@@ -146,8 +144,9 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据
      */
     @Override
-    @GetMapping("/dictionaryData/dataKey")
-    public R<DicDataVO> selectDicDataByDataKey(@NotBlank(message = "字典数据键为空！") String dataKey) {
+    @GetMapping("/dictionaryData/dataKey/{dataKey}")
+    public R<DicDataVO> selectDicDataByDataKey(@PathVariable("dataKey")
+                                               @NotBlank(message = "字典数据键为空！") String dataKey) {
         DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(dataKey);
         if (dicDataDTO == null)
             return R.ok(null);
@@ -163,7 +162,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据的 List
      */
     @Override
-    @GetMapping("/dictionaryData/dataKeys")
+    @PostMapping("/dictionaryData/dataKeys")
     public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody
                                                       @NotBlank(message = "字典类型键列表为空或者有空值！")
                                                       List<String> dataKeys) {

@@ -5,23 +5,42 @@ import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.vo.ArgVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@ConditionalOnProperty(name = "feign.client.mapFeign.enabled", havingValue = "true")
-@FeignClient(name = "bite-admin")
+
+@ConditionalOnProperty(name = "feign.bite-admin.feignEnabled", havingValue = "true")
+@FeignClient(contextId = "argumentFeignClient", name = "bite-admin")
 public interface ArgumentFeignClient {
 
     /**
+     * 获取参数列表
+     *
+     * @param argReadReqDTO 参数读请求
+     * @return 参数列表
+     */
+    @PostMapping("/argument/list")
+    R<BasePageVO<ArgVO>> argumentList(@RequestBody ArgReadReqDTO argReadReqDTO);
+
+    /**
+     * 编辑参数
+     *
+     * @param argWriteReqDTO 参数写请求
+     * @return 参数的 id
+     */
+    @PostMapping("/argument/edit")
+    R<Long> argumentEdit(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO);
+
+    /**
      * 添加参数
+     *
      * @param argWriteReqDTO 参数写请求
      * @return 参数的 id
      */
@@ -29,18 +48,23 @@ public interface ArgumentFeignClient {
     R<Long> argumentAdd(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO);
 
     /**
-     * 获取参数列表
-     * @param argReadReqDTO 参数读请求
-     * @return 参数列表
+     * 根据一个参数键获取对应的参数值
+     *
+     * @param configKey 参数键
+     * @return 参数值
      */
-    @GetMapping("/argument/list")
-    R<BasePageVO<ArgVO>> argumentList(@RequestBody ArgReadReqDTO argReadReqDTO);
+    @GetMapping("/argument/configKey/{configKey}")
+    R<ArgVO> argumentByConfigKey(@PathVariable("configKey") @NotBlank(message = "参数键为空！") String configKey);
 
     /**
-     * 编辑参数
-     * @param argWriteReqDTO 参数写请求
-     * @return 参数的 id
+     * 根据多个参数键获取对应的参数值
+     *
+     * @param configKeys 参数键列表
+     * @return 参数值列表
      */
-    @PostMapping("/argument/edit")
-    R<Long> argumentEdit(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO);
+    @PostMapping("/argument/configKeys")
+    R<List<ArgVO>> argumentByConfigKeys(@RequestBody
+                                        @NotBlank(message = "传入列表或其中元素是空值") List<String> configKeys);
+
+
 }

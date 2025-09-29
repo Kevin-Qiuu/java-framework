@@ -20,7 +20,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @Slf4j
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableFeignClients(basePackages = {
-        "com.bitejiuyeke.biteadminapi.map.feign"
+        "com.bitejiuyeke.biteadminapi.map.feign", "com.bitejiuyeke.biteadminapi.config.feign"
 })
 public class BiteMstemplateServiceApplication {
 

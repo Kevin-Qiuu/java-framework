@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface RegionMapper extends BaseMapper<SysRegion> {
+public interface SysRegionMapper extends BaseMapper<SysRegion> {
 
     /**
      * 获取全量区域信息（默认以拼音排序）

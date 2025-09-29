@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
+import com.bitejiuyeke.biteadminapi.config.domain.vo.ArgVO;
 import com.bitejiuyeke.biteadminservice.config.domain.entity.SysArgument;
 import com.bitejiuyeke.biteadminservice.config.mapper.SysArgumentMapper;
 import com.bitejiuyeke.biteadminservice.config.service.ISysArgumentService;
@@ -13,8 +14,11 @@ import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
 import jodd.util.StringUtil;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SysArgumentServiceImpl implements ISysArgumentService {
@@ -83,6 +87,29 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
         sysArgumentMapper.updateById(sysArgument);
         return sysArgument.getId();
     }
+
+    @Override
+    public ArgDTO argumentByConfigKey(String configKey) {
+        SysArgument sysArgument = sysArgumentMapper.selectOne(new LambdaQueryWrapper<SysArgument>()
+                .select().eq(SysArgument::getConfigKey, configKey));
+        if (sysArgument == null) {
+            return null;
+        }
+        ArgDTO argDTO = new ArgDTO();
+        BeanCopyUtil.copyProperties(sysArgument, argDTO);
+        return argDTO;
+    }
+
+    @Override
+    public List<ArgDTO> argumentByConfigKeys(List<String> configKeys) {
+        return sysArgumentMapper.selectList(new LambdaQueryWrapper<SysArgument>().select()
+                .in(SysArgument::getConfigKey, configKeys)).stream().map(sysArgument -> {
+                    ArgDTO argDTO = new ArgDTO();
+                    BeanCopyUtil.copyProperties(sysArgument, argDTO);
+                    return argDTO;
+        }).toList();
+    }
+
 
 
 }

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--    namespace 的根目录是src/main/java    -->
-<mapper namespace="com.bitejiuyeke.biteadminservice.map.mapper.RegionMapper">
+<mapper namespace="com.bitejiuyeke.biteadminservice.map.mapper.SysRegionMapper">
 
     <select id="selectAllRegion" resultType="com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion">
         select * from sys_region order by pinyin;

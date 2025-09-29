@@ -1,20 +1,23 @@
 package com.bitejiuyeke.biteadminservice.map.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
+import com.bitejiuyeke.biteadminservice.config.mapper.SysArgumentMapper;
+import com.bitejiuyeke.biteadminservice.config.service.ISysArgumentService;
 import com.bitejiuyeke.biteadminservice.map.constants.MapConstants;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.GeoResultDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.PoiListDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.SuggestSearchDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.entity.SysRegion;
-import com.bitejiuyeke.biteadminservice.map.mapper.RegionMapper;
+import com.bitejiuyeke.biteadminservice.map.mapper.SysRegionMapper;
 import com.bitejiuyeke.biteadminservice.map.service.IMapProvider;
 import com.bitejiuyeke.biteadminservice.map.service.IMapService;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.RegionDTO;
 import com.bitejiuyeke.bitecommoncache.utils.CacheUtil;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
-import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommonredis.service.RedisService;
@@ -29,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 public class MapService implements IMapService {
 
     @Autowired
-    private RegionMapper regionMapper;
+    private SysRegionMapper regionMapper;
     @Autowired
     private RedisService redisService;
     @Autowired
@@ -50,6 +50,8 @@ public class MapService implements IMapService {
     private RedissonLockService redissonLockService;
     @Autowired
     private IMapProvider mapProvider;
+    @Autowired
+    private ISysArgumentService argumentService;
 
     @PostConstruct
     public void initService() {
@@ -106,7 +108,7 @@ public class MapService implements IMapService {
     @Override
     public RegionDTO locateCityByLocation(LocationDTO locationDTO) {
         GeoResultDTO geoResultDTO = mapProvider.geoCoderTencentMap(locationDTO);
-        String cityCode = geoResultDTO.getResult().getAd_info().getAdcode().substring(0,4) + "00";
+        String cityCode = geoResultDTO.getResult().getAd_info().getAdcode().substring(0, 4) + "00";
         List<RegionDTO> list = loadCityList().stream().filter(regionDTO -> regionDTO.getCode().equals(String.valueOf(cityCode))).toList();
         if (list.isEmpty()) {
             throw new ServiceException(ResultCode.TencentMAP_CITY_UNKNOW);
@@ -120,7 +122,8 @@ public class MapService implements IMapService {
         }
         return loadRegionInfo(MapConstants.CACHE_MAP_REGION_PARENT_KEY + parentCode,
                 MapConstants.CACHE_MAP_REGION_PARENT_REDISSON_LOCK_KEY + parentCode,
-                () -> loadRegionChildrenFromMapper(parentCode), new TypeReference<>() {});
+                () -> loadRegionChildrenFromMapper(parentCode), new TypeReference<>() {
+                });
     }
 
     private List<RegionDTO> loadRegionChildrenFromMapper(String parentCode) {
@@ -132,7 +135,8 @@ public class MapService implements IMapService {
     private Map<String, List<RegionDTO>> loadCityPinyinMap() {
         return loadRegionInfo(MapConstants.CACHE_MAP_CITY_PINYIN_KEY,
                 MapConstants.CACHE_MAP_CITY_PINYIN_REDISSON_LOCK_KEY, this::loadCityPinyinMapFromMapper,
-                new TypeReference<>() {});
+                new TypeReference<>() {
+                });
     }
 
     private Map<String, List<RegionDTO>> loadCityPinyinMapFromMapper() {
@@ -151,11 +155,23 @@ public class MapService implements IMapService {
     private List<RegionDTO> loadHotCityList() {
         return loadRegionInfo(MapConstants.CACHE_MAP_HOT_CITY_KEY,
                 MapConstants.CACHE_MAP_HOT_CITY_REDISSON_LOCK_KRY,
-                () -> loadCityList().stream().filter(regionDTO ->
-                        MapConstants.CACHE_MAP_CITY_HOT_REGION_CODE.contains(regionDTO.getCode())).toList(),
-                new TypeReference<>() {});
+                this::loadHotCityListFromMapper,
+                new TypeReference<>() {
+                });
     }
 
+    private List<RegionDTO> loadHotCityListFromMapper() {
+        ArgDTO argDTO = argumentService.argumentByConfigKey(MapConstants.CACHE_MAP_CITY_HOT_REGION_CODE_CONFIG_KEY);
+        List<Integer> hotCityRegionCodes = Arrays.stream(argDTO.getValue().split(",")).map(Integer::parseInt).toList();
+        return regionMapper.selectList(new LambdaQueryWrapper<SysRegion>().select().in(SysRegion::getCode, hotCityRegionCodes))
+                .stream()
+                .filter(sysRegion -> sysRegion.getLevel() == 2)
+                .map(sysRegion -> {
+                    RegionDTO regionDTO = new RegionDTO();
+                    BeanCopyUtil.copyProperties(sysRegion, regionDTO);
+                    return regionDTO;
+                }).toList();
+    }
 
     private List<RegionDTO> loadCityList() {
         return loadRegionInfo(MapConstants.CACHE_MAP_CITY_KEY,
@@ -175,6 +191,7 @@ public class MapService implements IMapService {
      * 通过多级缓存和分布式锁机制来防止缓存击穿问题。
      *  todo: 查看 TypeReference 为什么在方法中使用 TypeReference<T> 的时候会出现 null 的问题，泛型擦除
      *  todo: 再详细总结泛型擦除
+     *
      * @param cacheKey        缓存中存放的 key
      * @param redissonLockKey 分布式锁中存放的 key
      * @param supplier        函数式接口，传递从数据库加载数据的相关操作

@@ -10,12 +10,12 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class ArgumentController implements ArgumentFeignClient {
@@ -29,7 +29,6 @@ public class ArgumentController implements ArgumentFeignClient {
      * @param argWriteReqDTO 参数写请求
      * @return 参数的 id
      */
-    @Override
     @PostMapping("/argument/add")
     public R<Long> argumentAdd(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO) {
         return R.ok(sysArgumentService.argumentAdd(argWriteReqDTO));
@@ -41,8 +40,7 @@ public class ArgumentController implements ArgumentFeignClient {
      * @param argReadReqDTO 参数读请求
      * @return 参数列表
      */
-    @Override
-    @GetMapping("/argument/list")
+    @PostMapping("/argument/list")
     public R<BasePageVO<ArgVO>> argumentList(@RequestBody ArgReadReqDTO argReadReqDTO) {
         BasePageDTO<ArgDTO> basePageDTO = sysArgumentService.argumentList(argReadReqDTO);
         BasePageVO<ArgVO> basePageVO = new BasePageVO<>();
@@ -57,10 +55,42 @@ public class ArgumentController implements ArgumentFeignClient {
      * @param argWriteReqDTO 参数写请求
      * @return 参数的 id
      */
-    @Override
     @PostMapping("/argument/edit")
     public R<Long> argumentEdit(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO) {
         return R.ok(sysArgumentService.argumentEdit(argWriteReqDTO));
     }
+
+
+    /**
+     * 根据一个参数键获取对应的参数值
+     *
+     * @param configKey 参数键
+     * @return 参数值
+     */
+    @Override
+    @GetMapping("/argument/configKey/{configKey}")
+    public R<ArgVO> argumentByConfigKey(@PathVariable("configKey") @NotBlank(message = "参数键为空！") String configKey) {
+        ArgDTO argDTO = sysArgumentService.argumentByConfigKey(configKey);
+        if (argDTO == null) {
+            return R.ok(null);
+        }
+        ArgVO argVO = new ArgVO();
+        BeanCopyUtil.copyProperties(argDTO, argVO);
+        return R.ok(argVO);
+    }
+
+    /**
+     * 根据多个参数键获取对应的参数值
+     *
+     * @param configKeys 参数键列表
+     * @return 参数值列表
+     */
+    @PostMapping("/argument/configKeys")
+    public R<List<ArgVO>> argumentByConfigKeys(@RequestBody
+                                               @NotBlank(message = "传入列表或其中元素是空值") List<String> configKeys) {
+        List<ArgDTO> argDTOs = sysArgumentService.argumentByConfigKeys(configKeys);
+        return R.ok(BeanCopyUtil.copyListProperties(argDTOs, ArgVO::new));
+    }
+
 
 }
