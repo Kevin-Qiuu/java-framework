@@ -12,9 +12,12 @@
     <artifactId>bite-common</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>bite-common-redis</module>
         <module>bite-common-cache</module>
+        <module>bite-common-core</module>
+        <module>bite-common-domain</module>
+        <module>bite-common-redis</module>
         <module>bite-common-rabbitmq</module>
+        <module>bite-common-security</module>
     </modules>
 
     <properties>

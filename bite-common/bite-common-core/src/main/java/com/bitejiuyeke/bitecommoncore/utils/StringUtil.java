@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class StringUtil {
 
+
+
     /**
      * 判断指定字符串是否与指定匹配规则链表中的任意一个匹配规则匹配
      *

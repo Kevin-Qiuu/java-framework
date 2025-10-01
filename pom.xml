@@ -17,9 +17,12 @@
         <module>bite-mstemplate</module>
         <module>bite-gateway</module>
         <module>bite-common</module>
-        <module>bite-common/bite-common-core</module>
-        <module>bite-common/bite-common-domain</module>
-        <module>bite-common/bite-commom-security</module>
+<!--        <module>bite-common/bite-common-cache</module>-->
+<!--        <module>bite-common/bite-common-core</module>-->
+<!--        <module>bite-common/bite-common-domain</module>-->
+<!--        <module>bite-common/bite-common-security</module>-->
+<!--        <module>bite-common/bite-common-rabbitmq</module>-->
+<!--        <module>bite-common/bite-common-redis</module>-->
         <module>bite-file</module>
         <module>bite-admin</module>
     </modules>
@@ -46,7 +49,7 @@
         <httpclient.version>4.5.13</httpclient.version>
         <tencent-cloud.cos.version>5.6.227</tencent-cloud.cos.version>
         <tencent-cloud.cos-sts.version>3.1.0</tencent-cloud.cos-sts.version>
-        <jwt.version>0.9.1</jwt.version>
+        <jwt.version>0.11.5</jwt.version>
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <hutool.version>5.8.25</hutool.version>
         <aliyun.sms.version>3.1.1</aliyun.sms.version>
@@ -122,10 +125,30 @@
                 <version>${redisson.version}</version>
             </dependency>
 
+            <!--            <dependency>-->
+            <!--                <groupId>io.jsonwebtoken</groupId>-->
+            <!--                <artifactId>jjwt</artifactId>-->
+            <!--                <version>${jwt.version}</version>-->
+            <!--            </dependency>-->
+
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
+                <artifactId>jjwt-api</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
@@ -133,6 +156,7 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb.api.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>cn.hutool</groupId>

@@ -14,11 +14,11 @@
         <module name="bite-common-redis" />
         <module name="bite-gateway" />
         <module name="bite-mstemplate-api" />
+        <module name="bite-common-security" />
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
         <module name="bite-admin-service" />
         <module name="bite-common-cache" />
-        <module name="bite-commom-security" />
         <module name="bite-mstemplate-service" />
       </profile>
     </annotationProcessing>
@@ -29,13 +29,13 @@
       <module name="bite-admin" options="" />
       <module name="bite-admin-api" options="-parameters" />
       <module name="bite-admin-service" options="-parameters" />
-      <module name="bite-commom-security" options="-parameters" />
       <module name="bite-common" options="" />
       <module name="bite-common-cache" options="-parameters" />
       <module name="bite-common-core" options="-parameters" />
       <module name="bite-common-domain" options="-parameters" />
       <module name="bite-common-rabbitmq" options="-parameters" />
       <module name="bite-common-redis" options="-parameters" />
+      <module name="bite-common-security" options="-parameters" />
       <module name="bite-file" options="" />
       <module name="bite-file-api" options="-parameters" />
       <module name="bite-file-service" options="-parameters" />

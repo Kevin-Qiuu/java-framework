@@ -1,4 +1,4 @@
-package com.bitejiuyeke.bitecommonsecurity.exception;
+package com.bitejiuyeke.bitecommondomain.exception;
 
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import lombok.Data;

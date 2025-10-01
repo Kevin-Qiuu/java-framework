@@ -3,7 +3,7 @@ package com.bitejiuyeke.bitecommonsecurity.handler;
 import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
-import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;

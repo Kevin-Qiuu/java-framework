@@ -10,7 +10,7 @@ import com.bitejiuyeke.biteadminservice.config.mapper.SysDictionaryTypeMapper;
 import com.bitejiuyeke.biteadminservice.config.service.ISysDictionaryService;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
-import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import jodd.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
