@@ -5,6 +5,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Objects;
+
 public class ServletUtil {
 
     /**
@@ -14,7 +16,7 @@ public class ServletUtil {
      */
     public static HttpServletRequest getRequest() {
         try {
-            return getRequestAttributes().getRequest();
+            return Objects.requireNonNull(getRequestAttributes()).getRequest();
         } catch (Exception e) {
             return null;
         }

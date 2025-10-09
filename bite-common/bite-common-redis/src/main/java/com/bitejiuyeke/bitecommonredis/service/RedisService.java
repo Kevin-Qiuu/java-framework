@@ -93,6 +93,16 @@ public class RedisService {
         redisTemplate.rename(oldKey, newKey);
     }
 
+    /**
+     * 删除对象
+     * @param key 对象的键
+     * @return 删除是否成功，成功=True，失败=False
+     */
+    public Boolean deleteObject(final String key) {
+        return redisTemplate.delete(key);
+    }
+
+
     //***************************** String 类型 *****************************
     public <T> void setCacheObject(final String key, final T value) {
         redisTemplate.opsForValue().set(key, value);

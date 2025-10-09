@@ -10,7 +10,7 @@ public class TokenConstants {
     /**
      * token 内容的前缀
      */
-    public final static String PREFIX = "Bearer ";
+    public final static String PREFIX = "TokenBearer:";
 
     /**
      * Redis 中用户信息存放 key

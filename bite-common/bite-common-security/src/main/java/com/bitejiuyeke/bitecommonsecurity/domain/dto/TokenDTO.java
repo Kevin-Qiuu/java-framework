@@ -18,6 +18,11 @@ public class TokenDTO {
     private Long expireTime;
 
     /**
+     * token 过期时间戳（单位：毫秒）
+     */
+    private Long expireTimeStamp;
+
+    /**
      * 转换成 TokenVO
      * @return TokenVO
      */

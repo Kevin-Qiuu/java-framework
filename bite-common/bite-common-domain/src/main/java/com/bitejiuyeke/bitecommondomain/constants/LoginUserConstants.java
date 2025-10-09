@@ -26,8 +26,8 @@ public class LoginUserConstants {
     public static final String USERNAME = "user_name";
 
     /**
-     * 授权字段
+     * 用户登录过期时间戳（单位：毫秒）
      */
-    public static final String AUTHORIZATION = "authorization";
+    public static final String EXPIRE_TIME_STAMP = "expire_time_stamp";
 
 }

@@ -1,6 +1,7 @@
 package com.bitejiuyeke.bitecommonsecurity.domain.dto;
 
 import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
+import com.bitejiuyeke.bitecommondomain.constants.SecurityConstants;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class LoginUserDTO {
     private Long expireTime;
 
     /**
-     * 登录过期时间戳
+     * 登录过期时间戳（毫秒）
      */
     private Long expireTimeStamp;
 
@@ -54,16 +55,8 @@ public class LoginUserDTO {
         claims.put(LoginUserConstants.USER_KEY, getUserKey());
         claims.put(LoginUserConstants.USERNAME, getUsername());
         claims.put(LoginUserConstants.USER_FROM, getUserFrom());
+        claims.put(LoginUserConstants.EXPIRE_TIME_STAMP, getExpireTimeStamp());
         return claims;
-    }
-
-    /**
-     * 获取用户过期时间戳
-     * @param expireTime 过期时间（分钟）
-     */
-    public void setExpireTimeStamp(Long expireTime) {
-        setExpireTime(expireTime);
-        this.expireTimeStamp = expireTime * 60 * 1000 + loginTime;
     }
 
 }

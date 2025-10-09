@@ -127,6 +127,25 @@ public class JwtUtil {
     }
 
     /**
+     * 根据令牌获取用户过期时间戳（单位：毫秒）
+     * @param token 令牌
+     * @return 用户过期时间戳
+     */
+    public static Long getUserExpireTimeStamp(String token) {
+        Claims claims = parseToken(token);
+        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME_STAMP));
+    }
+
+    /**
+     * 根据数据声明获取用户过期时间戳（单位：毫秒）
+     * @param claims 数据生命
+     * @return 用户过期时间戳
+     */
+    public static Long getUserExpireTimeStamp(Claims claims) {
+        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME_STAMP));
+    }
+
+    /**
      * 根据 key 获取 claim（数据载荷）的值
      *
      * @param claims    数据载荷
