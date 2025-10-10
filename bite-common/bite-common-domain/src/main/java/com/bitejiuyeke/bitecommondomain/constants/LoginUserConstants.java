@@ -26,8 +26,18 @@ public class LoginUserConstants {
     public static final String USERNAME = "user_name";
 
     /**
+     * 用户登录时间戳（单位：毫秒）
+     */
+    public static final String LOGIN_TIME = "login_time";
+
+    /**
      * 用户登录过期时间戳（单位：毫秒）
      */
-    public static final String EXPIRE_TIME_STAMP = "expire_time_stamp";
+    public static final String EXPIRE_TIME = "expire_time";
+
+    /**
+     * 用户登录会话 redis 键前缀
+     */
+    public static final String USER_SESSIONS = "userSessions:";
 
 }

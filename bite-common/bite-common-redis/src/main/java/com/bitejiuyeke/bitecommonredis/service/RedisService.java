@@ -302,7 +302,7 @@ public class RedisService {
      * @param key Redis 键
      * @param members 元素
      */
-    public void addMember(final String key, Object... members) {
+    public void addMemberSet(final String key, Object... members) {
         redisTemplate.opsForSet().add(key, members);
     }
 
@@ -311,7 +311,7 @@ public class RedisService {
      * @param key Redis 键
      * @param members 元素
      */
-    public void delMember(final String key, Object... members) {
+    public void delMemberSet(final String key, Object... members) {
         redisTemplate.opsForSet().remove(key, members);
     }
 

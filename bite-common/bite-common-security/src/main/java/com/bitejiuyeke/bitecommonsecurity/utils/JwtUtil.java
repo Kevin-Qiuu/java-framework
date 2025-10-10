@@ -2,6 +2,7 @@ package com.bitejiuyeke.bitecommonsecurity.utils;
 
 import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
 import com.bitejiuyeke.bitecommondomain.constants.TokenConstants;
+import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,6 +14,8 @@ import java.util.Map;
 
 /**
  * JWT 工具
+ * 这个工具中的 token 本身不具备过期的时效性
+ * 如果想对 token 进行过期校验，需要将过期的时效性检验放入数据载荷中，另外写方法在数据载荷中进行校验
  */
 public class JwtUtil {
 
@@ -46,6 +49,23 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    /**
+     * 获取整个用户对象 LoginUserDTO
+     *
+     * @param token 令牌
+     * @return LoginUserDTO
+     */
+    public static LoginUserDTO getLoginUserDTO(String token) {
+        LoginUserDTO loginUserDTO = new LoginUserDTO();
+        loginUserDTO.setUserKey(getUserKey(token));
+        loginUserDTO.setUserId(getUserId(token));
+        loginUserDTO.setUsername(getUserName(token));
+        loginUserDTO.setUserFrom(getUserFrom(token));
+        loginUserDTO.setLoginTime(getUserLoginTime(token));
+        loginUserDTO.setExpireTime(getUserExpireTime(token));
+        return loginUserDTO;
     }
 
     /**
@@ -127,13 +147,23 @@ public class JwtUtil {
     }
 
     /**
+     * 根据令牌获取用户登录时间戳（单位：毫秒）
+     * @param token 令牌
+     * @return 用户登录时间戳
+     */
+    public static Long getUserLoginTime(String token) {
+        Claims claims = parseToken(token);
+        return Long.parseLong(getValue(claims, LoginUserConstants.LOGIN_TIME));
+    }
+
+    /**
      * 根据令牌获取用户过期时间戳（单位：毫秒）
      * @param token 令牌
      * @return 用户过期时间戳
      */
-    public static Long getUserExpireTimeStamp(String token) {
+    public static Long getUserExpireTime(String token) {
         Claims claims = parseToken(token);
-        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME_STAMP));
+        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME));
     }
 
     /**
@@ -141,8 +171,8 @@ public class JwtUtil {
      * @param claims 数据生命
      * @return 用户过期时间戳
      */
-    public static Long getUserExpireTimeStamp(Claims claims) {
-        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME_STAMP));
+    public static Long getUserExpireTime(Claims claims) {
+        return Long.parseLong(getValue(claims, LoginUserConstants.EXPIRE_TIME));
     }
 
     /**

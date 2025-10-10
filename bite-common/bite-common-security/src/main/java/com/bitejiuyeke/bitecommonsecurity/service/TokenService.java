@@ -10,15 +10,15 @@ import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommonsecurity.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitecommonsecurity.utils.JwtUtil;
 import com.bitejiuyeke.bitecommonsecurity.utils.SecurityUtil;
-import jakarta.servlet.http.HttpServlet;
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -43,17 +43,28 @@ public class TokenService {
     /**
      * Redis 中用户信息存放 key
      */
-    public final String LOGIN_TOKEN_KEY = TokenConstants.LOGIN_TOKEN_KEY;
+    private final String LOGIN_USER_KEY = TokenConstants.LOGIN_TOKEN_KEY;
+
+    /**
+     * Redis 中用户会话存放 key
+     * 这个 key 对应着用户的所有登录态的 user_key，用于节省性能
+     */
+    private final String USER_SESSIONS_KEY = LoginUserConstants.USER_SESSIONS;
 
     /**
      * 用户缓存信息刷新时间
      */
-    public final Long refreshTime = CacheConstants.REFRESH_TIME;
+    private final Long refreshTime = CacheConstants.REFRESH_TIME;
 
     /**
      * 用户缓存信息过期时间
      */
-    public final Long EXPIRE_TIME = CacheConstants.EXPIRATION;
+    private final Long EXPIRE_TIME = CacheConstants.EXPIRATION;
+
+    /**
+     * 分钟到毫秒的换算单位
+     */
+    private final Long MILLE_SECOND = 60 * 1000L;
 
     /**
      * Redis 服务端
@@ -69,15 +80,14 @@ public class TokenService {
      */
     public TokenDTO createToken(LoginUserDTO loginUserDTO) {
         // 1、为用户分配 UUID
-        String userLoginId = UUID.randomUUID().toString();
-        loginUserDTO.setUserKey(userLoginId);
+        clearDuplicateLogin(loginUserDTO);
+        loginUserDTO.setUserKey(UUID.randomUUID().toString());
 
         // 2、将用户信息存入 Redis 缓存
         long currentTimeStamp = System.currentTimeMillis();
-        long expireTimeStamp = currentTimeStamp + EXPIRE_TIME * 60 * 1000; // expireTime 单位是分钟
+        long expireTimeStamp = currentTimeStamp + EXPIRE_TIME * MILLE_SECOND; // expireTime 单位是分钟
         loginUserDTO.setLoginTime(currentTimeStamp);
-        loginUserDTO.setExpireTime(EXPIRE_TIME);
-        loginUserDTO.setExpireTimeStamp(expireTimeStamp);
+        loginUserDTO.setExpireTime(expireTimeStamp);
         // 先设置 loginUserDTO 再设置 Redis 缓存的信息，是保证 Redis 缓存的过期时间一定比 LoginUserDTO 的时间靠后一些
         refreshLoginExpiration(loginUserDTO);
 
@@ -102,8 +112,8 @@ public class TokenService {
     public LoginUserDTO getLoginUser(String token) {
         LoginUserDTO loginUserDTO = null;
         try {
-            if (StringUtils.isNotEmpty(token) && !isTokenExpired(token)) {
-                String redisLoginUserKey = getRedisLoginUserKey(JwtUtil.getUserKey(token));
+            if (StringUtils.isNotEmpty(token) && isTokenNotExpired(token)) {
+                String redisLoginUserKey = getRedisUserLoginKey(JwtUtil.getUserKey(token));
                 loginUserDTO = redisService.getCacheObject(redisLoginUserKey, LoginUserDTO.class);
             }
         } catch (Exception e) {
@@ -112,8 +122,6 @@ public class TokenService {
         }
         return loginUserDTO;
     }
-
-    // 根据请求对象内容直接获取用户信息
 
     /**
      * 根据请求体获取用户信息
@@ -143,30 +151,117 @@ public class TokenService {
      */
     public void delLoginUser(String token) {
         // 判断用户 Token 是否已过期
-        if (StringUtils.isNotEmpty(token) && !isTokenExpired(token)) {
+        if (StringUtils.isNotEmpty(token) && isTokenNotExpired(token)) {
             // 删除 Redis 中的用户信息
-            redisService.deleteObject(getRedisLoginUserKey(JwtUtil.getUserKey(token)));
+            String redisUserLoginKey = getRedisUserLoginKey(JwtUtil.getUserKey(token));
+            String redisUserSessionKey = getRedisUserSessionKey(JwtUtil.getUserId(token));
+            String userSessionId = getUserSessionId(JwtUtil.getUserFrom(token), JwtUtil.getUserKey(token));
+            redisService.deleteObject(redisUserLoginKey);
+            redisService.delMemberSet(redisUserSessionKey, userSessionId);
         }
     }
 
     /**
      * 为超管提供删除用户的登录状态
-     * @param userId 用户 id
+     *
+     * @param userId   用户 id
      * @param userFrom 用户 来源
      */
     public void delLoginUser(String userId, String userFrom) {
-        if (StringUtils.isEmpty(userId)) return;
-        Collection<String> redisUserKeys = redisService.keys(LOGIN_TOKEN_KEY + "*");
-        for (String redisUserKey : redisUserKeys) {
-            LoginUserDTO loginUserDTO = redisService.getCacheObject(redisUserKey, LoginUserDTO.class);
-            if (loginUserDTO != null && loginUserDTO.getUserId().equals(userId) && loginUserDTO.getUserFrom().equals(userFrom)) {
-                redisService.deleteObject(redisUserKey);
-                return;
+        if (StringUtils.isEmpty(userId) && StringUtils.isEmpty(userFrom)) return;
+        String userSessionKey = getRedisUserSessionKey(userId);
+        // 获取当前用户登录会话的所有登录 id
+        Set<String> userSessionIds = redisService.getCacheSet(userSessionKey, new TypeReference<>() {
+        });
+        for (String userSessionId : userSessionIds) {
+            String[] split = userSessionId.split(CacheConstants.CACHE_SPLIT_COLON);
+            if (split.length == 3 && split[0].equals(userFrom)) {
+                redisService.deleteObject(getRedisUserLoginKey(split[2]));
+                redisService.delMemberSet(userSessionKey, userSessionId);
             }
         }
-
     }
 
+    /**
+     * 校验用户登录态是否已过期，如果在有效期内，则自动刷新有效期
+     *
+     * @param loginUserDTO 用户信息
+     */
+    public void verifyToken(LoginUserDTO loginUserDTO) {
+        if (System.currentTimeMillis() < loginUserDTO.getExpireTime()
+                && StringUtils.isNotEmpty(loginUserDTO.getUserKey())
+                && redisService.hasKey(getRedisUserLoginKey(loginUserDTO.getUserKey()))) {
+            loginUserDTO.setExpireTime(System.currentTimeMillis() + refreshTime * MILLE_SECOND);
+            refreshLoginExpiration(loginUserDTO);
+        }
+    }
+
+    /**
+     * 校验用户登录态是否已过期，如果在有效期内，则自动刷新有效期
+     *
+     * @param token 登录令牌
+     */
+    public void verifyToken(String token) {
+        verifyToken(JwtUtil.getLoginUserDTO(token));
+    }
+
+    /**
+     * 设置用户的登录态
+     *
+     * @param loginUserDTO 用户信息
+     */
+    public void setLoginUser(LoginUserDTO loginUserDTO) {
+        if (loginUserDTO != null && StringUtils.isNotEmpty(loginUserDTO.getUserKey())
+                && StringUtils.isNotEmpty(loginUserDTO.getUserId())) {
+            refreshLoginExpiration(loginUserDTO);
+        }
+    }
+
+    /**
+     * 刷新用户登录信息，重新设置 Redis 中的过期时间
+     *
+     * @param loginUserDTO 用户登录 DTO
+     */
+    private void refreshLoginExpiration(LoginUserDTO loginUserDTO) {
+        if (StringUtils.isEmpty(loginUserDTO.getUserKey())) {
+            throw new ServiceException("用户未分配登录 ID");
+        }
+        String loginUserRedisKey = getRedisUserLoginKey(loginUserDTO.getUserKey());
+        redisService.setCacheObject(loginUserRedisKey, loginUserDTO, EXPIRE_TIME, TimeUnit.MINUTES);
+        String loginUserSessionKey = getRedisUserSessionKey(loginUserDTO.getUserId());
+        redisService.addMemberSet(loginUserSessionKey,
+                getUserSessionId(loginUserDTO.getUserFrom(), loginUserDTO.getUserKey()));
+        redisService.expire(loginUserSessionKey, 24, TimeUnit.HOURS);
+    }
+
+    /**
+     * 判断用户是否登录过，如果用户的登录信息还存在于 Redis 中，则进行删除
+     * 防止出现多个相同的用户信息，但是却有不一样的 uuid
+     *
+     * @param loginUserDTO 用户登录 dto
+     */
+    private void clearDuplicateLogin(LoginUserDTO loginUserDTO) {
+
+        // 如果有 UserKey 则直接根据 UserKey 检查
+        if (StringUtils.isNotEmpty(loginUserDTO.getUserKey()) && StringUtils.isNotEmpty(loginUserDTO.getUserId())) {
+            redisService.deleteObject(getRedisUserLoginKey(loginUserDTO.getUserKey()));
+            redisService.delMemberSet(getRedisUserSessionKey(loginUserDTO.getUserId()),
+                    getUserSessionId(loginUserDTO.getUserFrom(), loginUserDTO.getUserKey()));
+            return;
+        }
+
+        delLoginUser(loginUserDTO.getUserId(), loginUserDTO.getUserFrom());
+    }
+
+    /**
+     * 根据用户 token 判断用户是否已经登录过期
+     *
+     * @param token 令牌
+     * @return 登录过期返回 false，否则返回 true
+     */
+    private boolean isTokenNotExpired(String token) {
+        return !isTokenExpired(token);
+    }
 
     /**
      * 根据用户 token 判断用户是否已经登录过期
@@ -174,8 +269,8 @@ public class TokenService {
      * @param token 令牌
      * @return 登录过期返回 true，否则返回 false
      */
-    public boolean isTokenExpired(String token) {
-        return System.currentTimeMillis() > JwtUtil.getUserExpireTimeStamp(token);
+    private boolean isTokenExpired(String token) {
+        return System.currentTimeMillis() > JwtUtil.getUserExpireTime(token);
     }
 
     /**
@@ -184,22 +279,15 @@ public class TokenService {
      * @param userKey UUID
      * @return Redis 中的 key
      */
-    public String getRedisLoginUserKey(String userKey) {
-        return LOGIN_TOKEN_KEY + userKey;
+    private String getRedisUserLoginKey(String userKey) {
+        return LOGIN_USER_KEY + userKey;
     }
 
-    /**
-     * 刷新用户登录信息，重新设置 Redis 中的过期时间
-     *
-     * @param loginUserDTO 用户登录 DTO
-     */
-    public void refreshLoginExpiration(LoginUserDTO loginUserDTO) {
-        if (StringUtils.isNotEmpty(loginUserDTO.getUserKey())) {
-            throw new ServiceException("用户未分配登录 ID");
-        }
-        String loginUserRedisKey = LOGIN_TOKEN_KEY + loginUserDTO.getUserKey();
-        redisService.setCacheObject(loginUserRedisKey, loginUserDTO, EXPIRE_TIME, TimeUnit.MINUTES);
+    private String getRedisUserSessionKey(String userId) {
+        return USER_SESSIONS_KEY + userId;
     }
 
-
+    private String getUserSessionId(String userFrom, String userKey) {
+        return userFrom + CacheConstants.CACHE_SPLIT_COLON + getRedisUserLoginKey(userKey);
+    }
 }

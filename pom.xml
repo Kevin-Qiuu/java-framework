@@ -17,12 +17,12 @@
         <module>bite-mstemplate</module>
         <module>bite-gateway</module>
         <module>bite-common</module>
-<!--        <module>bite-common/bite-common-cache</module>-->
-<!--        <module>bite-common/bite-common-core</module>-->
-<!--        <module>bite-common/bite-common-domain</module>-->
-<!--        <module>bite-common/bite-common-security</module>-->
-<!--        <module>bite-common/bite-common-rabbitmq</module>-->
-<!--        <module>bite-common/bite-common-redis</module>-->
+        <!--        <module>bite-common/bite-common-cache</module>-->
+        <!--        <module>bite-common/bite-common-core</module>-->
+        <!--        <module>bite-common/bite-common-domain</module>-->
+        <!--        <module>bite-common/bite-common-security</module>-->
+        <!--        <module>bite-common/bite-common-rabbitmq</module>-->
+        <!--        <module>bite-common/bite-common-redis</module>-->
         <module>bite-file</module>
         <module>bite-admin</module>
     </modules>
@@ -157,7 +157,6 @@
                 <version>${jaxb.api.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
@@ -186,6 +185,7 @@
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
             </dependency>
+
 
         </dependencies>
     </dependencyManagement>

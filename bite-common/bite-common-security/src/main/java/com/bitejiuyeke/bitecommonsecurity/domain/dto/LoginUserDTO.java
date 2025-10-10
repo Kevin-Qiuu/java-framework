@@ -36,14 +36,9 @@ public class LoginUserDTO {
     private Long loginTime;
 
     /**
-     * 登录过期时间（分钟）
-     */
-    private Long expireTime;
-
-    /**
      * 登录过期时间戳（毫秒）
      */
-    private Long expireTimeStamp;
+    private Long expireTime;
 
     /**
      * 将用户登录信息转换成 Token 的 claim
@@ -55,7 +50,8 @@ public class LoginUserDTO {
         claims.put(LoginUserConstants.USER_KEY, getUserKey());
         claims.put(LoginUserConstants.USERNAME, getUsername());
         claims.put(LoginUserConstants.USER_FROM, getUserFrom());
-        claims.put(LoginUserConstants.EXPIRE_TIME_STAMP, getExpireTimeStamp());
+        claims.put(LoginUserConstants.LOGIN_TIME, getLoginTime());
+        claims.put(LoginUserConstants.EXPIRE_TIME, getExpireTime());
         return claims;
     }
 
