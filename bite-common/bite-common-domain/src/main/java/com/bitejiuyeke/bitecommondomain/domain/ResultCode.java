@@ -64,12 +64,12 @@ public enum ResultCode {
     /**
      * 令牌不能为空
      */
-    TOKEN_EMPTY                      (401000, "令牌不能为空"),
+    TOKEN_EMPTY                      (401000, "令牌内容为空！"),
 
     /**
      * 令牌已过期或验证不正确！
      */
-    TOKEN_INVALID                      (401001, "令牌已过期或验证不正确！"),
+    TOKEN_INVALID                      (401001, "令牌内容无效！"),
 
     /**
      * 令牌已过期！

@@ -9,7 +9,7 @@ public class AESUtil {
     /**
      * 对称加密密钥
      */
-    private final static byte[] SECRET_KEY = "123456789@CJH@QJH@SWJTU".getBytes(StandardCharsets.UTF_8);
+    private final static byte[] SECRET_KEY = "123456789@SWJTU@".getBytes(StandardCharsets.UTF_8);
 
     /**
      * 加密信息

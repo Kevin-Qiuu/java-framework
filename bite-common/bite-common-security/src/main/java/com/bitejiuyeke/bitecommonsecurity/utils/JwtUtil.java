@@ -52,6 +52,21 @@ public class JwtUtil {
     }
 
     /**
+     * 校验 token 是否有效
+     * @param token token 内容
+     * @return true = 有效 ； false = 无效
+     */
+    public static boolean verifyTokenValid(String token) {
+        Claims claims = parseToken(token);
+        return ! (claims == null
+                || !claims.containsKey(LoginUserConstants.USER_ID)
+                || !claims.containsKey(LoginUserConstants.USER_KEY)
+                || !claims.containsKey(LoginUserConstants.USERNAME)
+                || !claims.containsKey(LoginUserConstants.USER_FROM)
+                || !claims.containsKey(LoginUserConstants.EXPIRE_TIME));
+    }
+
+    /**
      * 获取整个用户对象 LoginUserDTO
      *
      * @param token 令牌
@@ -91,6 +106,7 @@ public class JwtUtil {
 
     /**
      * 根据令牌获取用户ID
+     *
      * @param token 令牌
      * @return 用户ID
      */
@@ -101,6 +117,7 @@ public class JwtUtil {
 
     /**
      * 根据数据声明获取用户ID
+     *
      * @param claims 数据声明
      * @return 用户ID
      */
@@ -110,6 +127,7 @@ public class JwtUtil {
 
     /**
      * 根据令牌获取用户名称
+     *
      * @param token 令牌
      * @return 用户名称
      */
@@ -120,6 +138,7 @@ public class JwtUtil {
 
     /**
      * 根据数据声明获取用户名称
+     *
      * @param claims 数据声明
      * @return 用户名称
      */
@@ -129,6 +148,7 @@ public class JwtUtil {
 
     /**
      * 根据令牌获取用户来源
+     *
      * @param token 令牌
      * @return 用户来源
      */
@@ -139,6 +159,7 @@ public class JwtUtil {
 
     /**
      * 根据数据声明获取用户来源
+     *
      * @param claims 数据声明
      * @return 用户来源
      */
@@ -148,6 +169,7 @@ public class JwtUtil {
 
     /**
      * 根据令牌获取用户登录时间戳（单位：毫秒）
+     *
      * @param token 令牌
      * @return 用户登录时间戳
      */
@@ -158,6 +180,7 @@ public class JwtUtil {
 
     /**
      * 根据令牌获取用户过期时间戳（单位：毫秒）
+     *
      * @param token 令牌
      * @return 用户过期时间戳
      */
@@ -168,6 +191,7 @@ public class JwtUtil {
 
     /**
      * 根据数据声明获取用户过期时间戳（单位：毫秒）
+     *
      * @param claims 数据生命
      * @return 用户过期时间戳
      */

@@ -1,13 +1,36 @@
 package com.bitejiuyeke.bitecommoncore.utils;
 
+import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
+import com.bitejiuyeke.bitecommondomain.domain.R;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class ServletUtil {
+
+    /**
+     * 内容编码 (UTF-8)
+     *
+     * @param data 内容
+     * @return 编码后的内容
+     */
+    public static String urlEncode(String data) {
+        return URLEncoder.encode(data, StandardCharsets.UTF_8);
+    }
+
 
     /**
      * 获取当前请求的 HttpServletRequest
@@ -39,6 +62,26 @@ public class ServletUtil {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    // 为了使 ContentType 与调用方解耦
+    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, HttpStatus httpStatus,
+                                             Integer retCode, Object value) {
+        return webFluxResponseWriter(response, MediaType.APPLICATION_JSON_VALUE,
+                httpStatus, retCode, value);
+    }
+
+
+    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, String contentType, HttpStatus httpStatus,
+                                             Integer retCode, Object value) {
+
+        response.setStatusCode(httpStatus);
+        response.getHeaders().add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        R<Object> failResult = R.fail(retCode, String.valueOf(value));
+        DataBuffer dataBuffer = response.bufferFactory()
+                .wrap(JsonUtil.obj2String(failResult).getBytes(StandardCharsets.UTF_8));
+        return response.writeWith(Mono.just(dataBuffer));
     }
 
 }

@@ -3,6 +3,7 @@ package com.bitejiuyeke.biteadminservice.user.service.impl;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
+import com.bitejiuyeke.biteadminservice.user.domain.entity.Encrypt;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.SysUser;
 import com.bitejiuyeke.biteadminservice.user.mapper.SysUserMapper;
 import com.bitejiuyeke.biteadminservice.user.service.ISysUserService;
@@ -36,7 +37,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
         // 2. 判断电话是否存在
         SysUser sysUser = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getPhoneNumber, loginPasswordDTO.getPhone()));
+                .eq(SysUser::getPhoneNumber, new Encrypt(loginPasswordDTO.getPhone())));
         if (sysUser == null) {
             throw new ServiceException("当前手机号不存在！", ResultCode.INVALID_PARA.getCode());
         }
