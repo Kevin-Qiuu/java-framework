@@ -5,7 +5,6 @@ import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
 import com.bitejiuyeke.bitecommondomain.constants.SecurityConstants;
 import com.bitejiuyeke.bitecommondomain.constants.TokenConstants;
-import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
@@ -22,7 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-// todo 测试过滤器是否生效
+import java.util.List;
+
 
 @Component
 public class AuthorizationFilter implements GlobalFilter, Ordered {
@@ -37,7 +37,7 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
      * 网关的身份校验过滤逻辑
      *
      * @param exchange the current server exchange
-     * @param chain provides a way to delegate to the next filter
+     * @param chain    provides a way to delegate to the next filter
      * @return
      */
     @Override
@@ -56,7 +56,8 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
 
         // 2、判断请求的 uri 是否处于白名单中
         String uri = request.getURI().getPath();
-        if (StringUtil.matches(uri, ignoredUriWhiteList.getWhiteList())) {
+        List<String> whiteList = ignoredUriWhiteList.getWhiteList();
+        if (whiteList.isEmpty() || StringUtil.matches(uri, whiteList)) {
             return chain.filter(exchange);
         }
 
@@ -95,12 +96,12 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
     /**
      * 处理校验失败，设置报文响应码以及内容
      *
-     * @param exchange 当前的 ServerWebExchange
+     * @param exchange   当前的 ServerWebExchange
      * @param resultCode 结果码
      * @return Mono<Void> 用于发送执行成功信号
      */
     private Mono<Void> unauthorizedResponse(ServerWebExchange exchange, ResultCode resultCode) {
-        String statusCode = String.valueOf(resultCode.getCode()).substring(0, 3);
+        int statusCode = Integer.parseInt(String.valueOf(resultCode.getCode()).substring(0, 3));
         return ServletUtil.webFluxResponseWriter(exchange.getResponse(), HttpStatus.valueOf(statusCode),
                 resultCode.getCode(), resultCode.getMsg());
     }
@@ -122,6 +123,7 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
 
     /**
      * Ordered 接口可以由用户指定 Spring 的 Component 的执行顺序
+     *
      * @return 执行顺序
      */
     @Override

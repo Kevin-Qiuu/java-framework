@@ -226,7 +226,7 @@ public class TokenService {
         if (StringUtils.isEmpty(loginUserDTO.getUserKey())) {
             throw new ServiceException("用户未分配登录 ID");
         }
-        loginUserDTO.setExpireTime(System.currentTimeMillis() + refreshTime);
+        loginUserDTO.setExpireTime(System.currentTimeMillis() + refreshTime * MILLE_SECOND);
         String loginUserRedisKey = getRedisUserLoginKey(loginUserDTO.getUserKey());
         redisService.setCacheObject(loginUserRedisKey, loginUserDTO, refreshTime, TimeUnit.MINUTES);
         String loginUserSessionKey = getRedisUserSessionKey(loginUserDTO.getUserId());

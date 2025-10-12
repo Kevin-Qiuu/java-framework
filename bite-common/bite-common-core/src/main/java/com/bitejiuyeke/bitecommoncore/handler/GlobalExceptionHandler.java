@@ -1,4 +1,4 @@
-package com.bitejiuyeke.bitecommonsecurity.handler;
+package com.bitejiuyeke.bitecommoncore.handler;
 
 import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -23,7 +24,10 @@ import java.util.stream.Collectors;
 // @RestControllerAdvice = @ResponseBody + @ControllerAdvice
 // @ControllerAdvice 是 Spring 官方定义的 AOP 策略，其切点是全部的 Controller，通知是类中的 @ExceptionHandler 修饰的方法
 // 但是其实现的原理与 @Aspect 的 AOP 策略不同，这一点需加以区分
+// ConditionalOnWebApplication 阻止为 MVC 设计的 GlobalExceptionHandler 在 Gateway 响应式应用中被加载
+// GateWay 响应式应用中对于异常处理是有专门的一套逻辑
 @RestControllerAdvice
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Slf4j
 public class GlobalExceptionHandler {
 

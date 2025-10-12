@@ -34,10 +34,11 @@ public class RedisConfig {
      * @return redis操作模板
      */
     //完成对于redisTemplate 的配置
+    //自定义 RedisTemplate 的名字，防止其他服务中因为引入了其他配置的 RedisTemplate 导致的 Bean 的命名重复无法自动注入的问题
     //修饰符  返回值类型 函数名  参数列表  函数体
     //key  value
     //key  value (hashKey  hashValue)
-    @Bean
+    @Bean("JavaFrameWork-RedisTemplate")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);

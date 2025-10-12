@@ -5,6 +5,7 @@ import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -27,6 +28,7 @@ public class RedisService {
      * redis 操作模板类
      */
     @Autowired
+    @Qualifier("JavaFrameWork-RedisTemplate")
     private RedisTemplate redisTemplate;
 
     //***************************** 基本操作 *****************************

@@ -53,6 +53,9 @@ public class ServletUtil {
      *
      * <p>基于 ThreadLocal 的特性，使得在同一个请求线程中的任意位置都可以方便地获取到当前请求的相关信息，
      * 从而实现对 HTTP 报文的访问和操作。</p>
+     *
+     * 注意的是这个方法只适用于传统的网络模型（Spring MVC），不适用于网关的 WebFlux 架构，因为网关的线程处理是不固定的，
+     * 因此 ThreadLocal 就失效了
      */
     public static ServletRequestAttributes getRequestAttributes() {
 
