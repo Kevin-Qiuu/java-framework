@@ -1,7 +1,10 @@
 package com.bitejiuyeke.bitecommoncore.utils;
 
+import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class VerifyUtil {
@@ -16,6 +19,8 @@ public class VerifyUtil {
      */
     private final static String PHONE_NUMBER_REGEX = "^1[3|4|5|6|7|8|9][0-9]{9}$";
 
+    private final static String SOURCE = "0123456789";
+
     /**
      * 校验电话格式是否正确
      *
@@ -27,6 +32,24 @@ public class VerifyUtil {
             return false;
         }
         return Pattern.matches(PHONE_NUMBER_REGEX, phone);
+    }
+
+    /**
+     * 生成验证码
+     *
+     * @param size 验证码长度
+     * @return 生成的验证码
+     */
+    public static String generateCaptchaCode(int size) {
+        if (size <= 0) {
+            throw new ServiceException("验证码长度参数不是正数！", ResultCode.INVALID_PARA.getCode());
+        }
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < size; ++i) {
+            stringBuilder.append(SOURCE.charAt(random.nextInt(9)));
+        }
+        return stringBuilder.toString();
     }
 
 }

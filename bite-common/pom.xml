@@ -18,6 +18,7 @@
         <module>bite-common-redis</module>
         <module>bite-common-rabbitmq</module>
         <module>bite-common-security</module>
+        <module>bite-common-message</module>
     </modules>
 
     <properties>

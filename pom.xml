@@ -53,7 +53,7 @@
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <hutool.version>5.8.25</hutool.version>
         <aliyun.sms.version>3.1.1</aliyun.sms.version>
-
+        <aliyun.verifycode.version>2.0.0</aliyun.verifycode.version>
         <!--        &lt;!&ndash;运行环境&ndash;&gt;-->
         <!--        <runenv>test</runenv>-->
         <!--        <java.opts.default>-Xmx256m</java.opts.default>-->
@@ -116,6 +116,12 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
 
@@ -186,8 +192,25 @@
                 <version>${httpclient.version}</version>
             </dependency>
 
+            <!--阿里云短信认证服务-->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>alibabacloud-dypnsapi20170525</artifactId>
+                <version>${aliyun.verifycode.version}</version>
+            </dependency>
 
-        </dependencies>
+
+             <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>scsp20200702</artifactId>
+            <version>1.9.27</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dypnsapi20170525</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+   </dependencies>
     </dependencyManagement>
 
     <build>
