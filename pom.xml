@@ -25,6 +25,7 @@
         <!--        <module>bite-common/bite-common-redis</module>-->
         <module>bite-file</module>
         <module>bite-admin</module>
+        <module>bite-portal</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>

@@ -40,13 +40,13 @@ public class AliSmsService {
      *
      * @param phoneNumber 电话号码
      * @param captchaCode 验证码
-     * @param effectiveTime 有效时间
+     * @param expireTime 有效时间（单位：分钟）
      * @return true = 发送成功；false = 发送失败
      */
-    public boolean sendCaptchaCodeMessage(String phoneNumber, String captchaCode, Integer effectiveTime) {
+    public boolean sendCaptchaCodeMessage(String phoneNumber, String captchaCode, Integer expireTime) {
         Map<String, String> templateParam = new HashMap<>();
         templateParam.put("code", captchaCode);
-        templateParam.put("min", String.valueOf(effectiveTime));
+        templateParam.put("min", String.valueOf(expireTime));
         return sendTemplateMessage(phoneNumber, MessageConstants.LOGIN_OR_REGISTER_TEMPLATE_CODE, templateParam);
     }
 
@@ -65,7 +65,8 @@ public class AliSmsService {
                 .setSignName(signName)
                 .setTemplateCode(templateCode)
                 .setTemplateParam(JsonUtil.obj2String(templateParam))
-                .setPhoneNumber(phoneNumber);
+                .setPhoneNumber(phoneNumber)
+                .setInterval(0L);
         RuntimeOptions runtime = new RuntimeOptions();
 
         try {

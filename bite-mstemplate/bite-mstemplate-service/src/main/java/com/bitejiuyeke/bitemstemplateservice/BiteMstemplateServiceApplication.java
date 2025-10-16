@@ -19,8 +19,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @Slf4j
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+// todo 将扫描 feign 的配置放入 nacos 的配置中心
 @EnableFeignClients(basePackages = {
-        "com.bitejiuyeke.biteadminapi.map.feign", "com.bitejiuyeke.biteadminapi.config.feign"
+        "com.bitejiuyeke.biteadminapi.map.feign",
+        "com.bitejiuyeke.biteadminapi.config.feign"
 })
 public class BiteMstemplateServiceApplication {
 

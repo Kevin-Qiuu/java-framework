@@ -111,7 +111,7 @@ public class RedisService {
     }
 
     public <T> void setCacheObject(final String key, final T value, long timeOut) {
-        redisTemplate.opsForValue().set(key, value, timeOut);
+        redisTemplate.opsForValue().set(key, value, timeOut, TimeUnit.SECONDS);
     }
 
     public <T> void setCacheObject(final String key, final T value, long timeOut, TimeUnit timeUnit) {

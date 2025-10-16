@@ -14,12 +14,14 @@
         <module name="bite-common-domain" />
         <module name="bite-common-redis" />
         <module name="bite-gateway" />
+        <module name="bite-portal-service" />
         <module name="bite-mstemplate-api" />
         <module name="bite-common-security" />
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
         <module name="bite-admin-service" />
         <module name="bite-common-cache" />
+        <module name="bite-portal-api" />
         <module name="bite-mstemplate-service" />
       </profile>
     </annotationProcessing>
@@ -45,6 +47,9 @@
       <module name="bite-mstemplate" options="" />
       <module name="bite-mstemplate-api" options="-parameters" />
       <module name="bite-mstemplate-service" options="-parameters" />
+      <module name="bite-portal" options="" />
+      <module name="bite-portal-api" options="-parameters" />
+      <module name="bite-portal-service" options="-parameters" />
     </option>
   </component>
 </project>

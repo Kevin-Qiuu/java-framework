@@ -152,7 +152,6 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     }
 
     @Override
-    // todo: test
     public Long editDictionaryData(DicDataWriteReqDTO dicDataWriteReqDTO) {
         // 判断字典类型是否存在
         LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
@@ -180,7 +179,6 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     }
 
 
-    // todo: test
     @Override
     public List<DicDataDTO> selectDicDataByTypeKey(String typeKey) {
         LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
@@ -194,7 +192,6 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         return BeanCopyUtil.copyListProperties(selectList, DicDataDTO::new);
     }
 
-    // todo: test
     @Override
     public Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(List<String> typeKeys) {
         Map<String, List<DicDataDTO>> dicDataDTOMap = new HashMap<>();
@@ -225,7 +222,6 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         return dicDataDTO;
     }
 
-    // todo: test
     @Override
     public List<DicDataDTO> selectDicDataByDataKeys(List<String> dataKeys) {
         List<SysDictionaryData> selectList = sysDictionaryDataMapper

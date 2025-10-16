@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.AntPathMatcher;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * 字符串工具类
@@ -52,4 +53,21 @@ public class StringUtil {
         AntPathMatcher matcher = new AntPathMatcher();
         return matcher.match(pattern, url);
     }
+
+    /**
+     * 创建随机字符串
+     *
+     * @param length 字符串长度
+     * @return 随机字符串
+     */
+    public static String generateRandomStr(int length) {
+        String character = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder randomStr = new StringBuilder();
+        for (int i = 0; i < length; ++i) {
+            randomStr.append(character.charAt(random.nextInt(character.length())));
+        }
+        return randomStr.toString();
+    }
+
 }

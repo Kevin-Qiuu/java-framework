@@ -22,6 +22,21 @@ public class VerifyUtil {
     private final static String SOURCE = "0123456789";
 
     /**
+     * 密码最小长度
+     */
+    private final static int PASSWORD_MIN_LENGTH = 8;
+
+    /**
+     * 密码最大长度
+     */
+    private final static int PASSWORD_MAX_LENGTH = 16;
+
+    /**
+     * 密码正则化校验表达式（支持字母、数字和常见特殊字符）
+     */
+    private final static String PASSWORD_REGEX = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]+$";
+
+    /**
      * 校验电话格式是否正确
      *
      * @param phone 电话号码
@@ -32,6 +47,14 @@ public class VerifyUtil {
             return false;
         }
         return Pattern.matches(PHONE_NUMBER_REGEX, phone);
+    }
+
+    public static boolean checkPassword(String password) {
+        if (StringUtils.isEmpty(password)
+                || password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
+            return false;
+        }
+        return Pattern.matches(PASSWORD_REGEX, password);
     }
 
     /**

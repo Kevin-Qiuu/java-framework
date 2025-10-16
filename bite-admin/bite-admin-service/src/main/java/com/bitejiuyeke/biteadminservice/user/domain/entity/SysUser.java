@@ -5,10 +5,12 @@ import com.bitejiuyeke.bitecommondomain.domain.entity.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
+
 @Data
 @TableName("sys_user")
 @EqualsAndHashCode(callSuper = true)
-public class SysUser extends BaseDO {
+public class SysUser extends BaseDO implements Serializable {
 
     /**
      * 用户名

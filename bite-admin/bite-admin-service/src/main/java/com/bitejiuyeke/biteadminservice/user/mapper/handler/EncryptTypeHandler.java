@@ -15,14 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * 1. setNonNullParameter方法调用时机<br>
- * 场景: 当执行SQL插入或更新操作时<br>
- * 触发条件: 处理带有@Param注解或实体类中的Encrypt类型字段<br>
- * 具体过程: MyBatis构建PreparedStatement时，遇到Encrypt类型的参数会自动调用此方法<br>
- * <br>
- * 2. getNullableResult系列方法调用时机<br>
- * 场景: 当执行SQL查询操作时<br>
- * 触发条件: 从ResultSet中获取数据并映射到Java对象的Encrypt类型属性时<br>
+ * Encrypt → String（加密）：当 MyBatis 需要将 Encrypt 对象转换为数据库存储的字符串时，会调用加密算法<br>
+ * String → Encrypt（解密）：当 MyBatis 需要将数据库中的加密字符串转换为 Encrypt 对象时，会调用解密算法<br>
  */
 
 @MappedTypes(Encrypt.class)
@@ -32,10 +26,10 @@ public class EncryptTypeHandler extends BaseTypeHandler<Encrypt> {
     /**
      * 加密字段
      *
-     * @param ps 预编译的 SQL 语句对象
-     * @param i 参数在 SQL 中的位置索引
+     * @param ps        预编译的 SQL 语句对象
+     * @param i         参数在 SQL 中的位置索引
      * @param parameter 待加密字段
-     * @param jdbcType 加密后的字段
+     * @param jdbcType  加密后的字段
      */
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Encrypt parameter, JdbcType jdbcType) throws SQLException {
@@ -51,7 +45,7 @@ public class EncryptTypeHandler extends BaseTypeHandler<Encrypt> {
     /**
      * 从 ResultSet 中根据列名获取 Encrypt 对象（从数据库读取时调用）
      *
-     * @param rs MyBatis 查询的结果
+     * @param rs         MyBatis 查询的结果
      * @param columnName 需要解密的列名
      * @return Encrypt
      */
@@ -64,7 +58,7 @@ public class EncryptTypeHandler extends BaseTypeHandler<Encrypt> {
     /**
      * 从 ResultSet 中根据列索引获取 Encrypt 对象（从数据库读取时调用）
      *
-     * @param rs MyBatis 查询的结果
+     * @param rs          MyBatis 查询的结果
      * @param columnIndex 需要解密的列索引
      * @return Encrypt
      */
@@ -76,7 +70,8 @@ public class EncryptTypeHandler extends BaseTypeHandler<Encrypt> {
 
     /**
      * 从存储过程的结果中获取 Encrypt 对象
-     * @param cs MyBatis 存储过程的结果
+     *
+     * @param cs          MyBatis 存储过程的结果
      * @param columnIndex 需要解密的列索引
      * @return Encrypt
      */

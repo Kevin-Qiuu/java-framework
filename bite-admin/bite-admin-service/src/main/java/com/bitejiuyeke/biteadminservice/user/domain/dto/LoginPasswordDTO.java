@@ -3,8 +3,10 @@ package com.bitejiuyeke.biteadminservice.user.domain.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class LoginPasswordDTO {
+public class LoginPasswordDTO implements Serializable {
 
     /**
      * 用户手机号码
