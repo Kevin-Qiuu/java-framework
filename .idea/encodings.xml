@@ -23,6 +23,10 @@
     <file url="file://$PROJECT_DIR$/bite-mstemplate/bite-mstemplate-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-mstemplate/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-mstemplate/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-notify/bite-notify-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-notify/bite-notify-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-notify/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bite-notify/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-portal/bite-portal-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-portal/bite-portal-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bite-portal/src/main/java" charset="UTF-8" />

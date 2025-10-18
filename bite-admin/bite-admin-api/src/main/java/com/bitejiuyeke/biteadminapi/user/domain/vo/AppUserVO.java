@@ -1,7 +1,5 @@
 package com.bitejiuyeke.biteadminapi.user.domain.vo;
 
-import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,10 +34,5 @@ public class AppUserVO implements Serializable {
      * 用户头像
      */
     private String avatar;
-
-    /**
-     * 用户如果注册的时候自动分配一个 token
-     */
-    private TokenVO tokenVO;
 
 }

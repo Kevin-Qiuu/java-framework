@@ -6,7 +6,7 @@ import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
 import com.bitejiuyeke.bitecommondomain.constants.SecurityConstants;
 import com.bitejiuyeke.bitecommondomain.constants.TokenConstants;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
 import com.bitejiuyeke.bitecommonsecurity.utils.JwtUtil;
 import com.bitejiuyeke.bitegateway.config.IgnoredUriWhiteList;

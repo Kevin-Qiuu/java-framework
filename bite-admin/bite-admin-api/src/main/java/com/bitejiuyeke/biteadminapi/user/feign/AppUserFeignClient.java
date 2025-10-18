@@ -1,15 +1,17 @@
 package com.bitejiuyeke.biteadminapi.user.feign;
 
-import com.bitejiuyeke.biteadminapi.user.domain.dto.LoginByPhoneReqDTO;
+import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.vo.AppUserVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
+import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+@ConditionalOnProperty(name = "feign.bite-admin.feignEnabled", havingValue = "true")
+@FeignClient(contextId = "appUserFeignClient", name = "bite-admin", path = "/app_user")
 public interface AppUserFeignClient {
 
     /**
@@ -21,21 +23,21 @@ public interface AppUserFeignClient {
     @GetMapping("/phone_find/{phoneNumber}")
     R<AppUserVO> findByPhone(@PathVariable("phoneNumber") String phoneNumber);
 
-    /**
-     * 根据手机号注册用户
-     *
-     * @param phoneNumber 手机号
-     * @return C端用户VO
-     */
-    @GetMapping("/register/phone/{phoneNumber}")
-    R<AppUserVO> registerByPhone(@PathVariable("phoneNumber") String phoneNumber);
 
     /**
-     * 根据手机号码进行登录（验证码传参为空则发送新的验证码）
+     * 根据手机号码进行登录（如果用户不存在自动注册，注册成功会为用户自动分配一个 token）
      *
      * @return token
      */
-    @GetMapping("/login/phone")
+    @PostMapping("/login/phone")
     R<TokenVO> loginByPhone(@RequestBody @Validated LoginByPhoneReqDTO reqDTO);
+
+
+    /**
+     * 编辑用户信息
+     * @param reqDTO 编辑用户请求 DTO
+     */
+    @PostMapping("/edit")
+    R<Void> editUserInfo(@RequestBody EditUserReqDTO reqDTO);
 
 }

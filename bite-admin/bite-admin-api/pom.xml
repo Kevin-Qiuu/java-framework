@@ -44,7 +44,7 @@
 
         <dependency>
             <groupId>com.bitejiuyeke</groupId>
-            <artifactId>bite-common-security</artifactId>
+            <artifactId>bite-notify-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

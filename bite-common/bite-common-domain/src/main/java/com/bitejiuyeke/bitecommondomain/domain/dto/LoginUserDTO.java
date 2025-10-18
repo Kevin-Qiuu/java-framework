@@ -1,7 +1,6 @@
-package com.bitejiuyeke.bitecommonsecurity.domain.dto;
+package com.bitejiuyeke.bitecommondomain.domain.dto;
 
 import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
-import com.bitejiuyeke.bitecommondomain.constants.SecurityConstants;
 import lombok.Data;
 
 import java.util.HashMap;

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="bite-file-api" />
         <module name="bite-file-service" />
+        <module name="bite-notify-service" />
         <module name="bite-admin-api" />
         <module name="bite-common-message" />
         <module name="bite-common-domain" />
@@ -20,6 +21,7 @@
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
         <module name="bite-admin-service" />
+        <module name="bite-notify-api" />
         <module name="bite-common-cache" />
         <module name="bite-portal-api" />
         <module name="bite-mstemplate-service" />
@@ -47,6 +49,9 @@
       <module name="bite-mstemplate" options="" />
       <module name="bite-mstemplate-api" options="-parameters" />
       <module name="bite-mstemplate-service" options="-parameters" />
+      <module name="bite-notify" options="" />
+      <module name="bite-notify-api" options="-parameters" />
+      <module name="bite-notify-service" options="-parameters" />
       <module name="bite-portal" options="" />
       <module name="bite-portal-api" options="-parameters" />
       <module name="bite-portal-service" options="-parameters" />

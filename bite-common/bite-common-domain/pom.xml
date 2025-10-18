@@ -32,7 +32,6 @@
             <artifactId>mybatis-plus-annotation</artifactId>
         </dependency>
 
-
     </dependencies>
 
 </project>

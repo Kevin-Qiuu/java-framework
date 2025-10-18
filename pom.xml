@@ -26,6 +26,7 @@
         <module>bite-file</module>
         <module>bite-admin</module>
         <module>bite-portal</module>
+        <module>bite-notify</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>

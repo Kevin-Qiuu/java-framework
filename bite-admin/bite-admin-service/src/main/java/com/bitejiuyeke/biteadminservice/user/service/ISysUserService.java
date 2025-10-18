@@ -2,7 +2,7 @@ package com.bitejiuyeke.biteadminservice.user.service;
 
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserDTO;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.TokenDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 
 import java.util.List;
 

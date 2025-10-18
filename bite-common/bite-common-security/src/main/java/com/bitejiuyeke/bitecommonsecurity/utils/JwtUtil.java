@@ -2,7 +2,7 @@ package com.bitejiuyeke.bitecommonsecurity.utils;
 
 import com.bitejiuyeke.bitecommondomain.constants.LoginUserConstants;
 import com.bitejiuyeke.bitecommondomain.constants.TokenConstants;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.LoginUserDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

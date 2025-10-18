@@ -6,7 +6,7 @@ import com.bitejiuyeke.biteadminservice.user.domain.vo.SysUserVO;
 import com.bitejiuyeke.biteadminservice.user.service.ISysUserService;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.TokenDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

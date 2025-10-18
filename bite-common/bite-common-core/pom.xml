@@ -110,6 +110,12 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
+        <!--        feign 相关配置-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
 
     </dependencies>
 

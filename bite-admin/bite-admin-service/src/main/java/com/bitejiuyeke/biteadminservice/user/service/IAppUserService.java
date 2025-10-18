@@ -1,8 +1,9 @@
 package com.bitejiuyeke.biteadminservice.user.service;
 
 import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
-import com.bitejiuyeke.biteadminapi.user.domain.dto.LoginByPhoneReqDTO;
-import com.bitejiuyeke.bitecommonsecurity.domain.dto.TokenDTO;
+import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
+import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 
 public interface IAppUserService {
 
@@ -15,16 +16,16 @@ public interface IAppUserService {
     AppUserDTO findByPhone(String phoneNumber);
 
     /**
-     * 根据手机号注册用户
-     * @param phoneNumber 手机号
-     * @return C端用户DTO
-     */
-    AppUserDTO registerByPhone(String phoneNumber);
-
-    /**
-     * 根据手机号码进行登录（验证码）
+     * 根据手机验证码进行登录（如果用户不存在自动注册，注册成功会为用户自动分配一个 token）
+     *
      * @return token
      */
     TokenDTO loginByPhone(LoginByPhoneReqDTO reqDTO);
+
+    /**
+     * 编辑用户信息
+     * @param reqDTO 编辑用户请求 DTO
+     */
+    void editUserInfo(EditUserReqDTO reqDTO);
 
 }

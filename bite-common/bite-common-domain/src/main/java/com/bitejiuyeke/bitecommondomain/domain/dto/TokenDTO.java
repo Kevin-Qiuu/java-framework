@@ -1,6 +1,5 @@
-package com.bitejiuyeke.bitecommonsecurity.domain.dto;
+package com.bitejiuyeke.bitecommondomain.domain.dto;
 
-import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import lombok.Data;
 
@@ -28,7 +27,9 @@ public class TokenDTO {
      */
     public TokenVO convert2TokenVO() {
         TokenVO tokenVO = new TokenVO();
-        BeanCopyUtil.copyProperties(this, tokenVO);
+        tokenVO.setAccessToken(this.accessToken);
+        tokenVO.setExpireTime(this.expireTime);
+        tokenVO.setExpireTimeStamp(this.expireTimeStamp);
         return tokenVO;
     }
 

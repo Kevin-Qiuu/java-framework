@@ -1,13 +1,17 @@
 package com.bitejiuyeke.bitecommoncore.handler;
 
+import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
 import com.bitejiuyeke.bitecommondomain.constants.CommonConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.UTF8;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.ObjectError;
@@ -18,7 +22,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // @RestControllerAdvice = @ResponseBody + @ControllerAdvice
@@ -144,6 +150,28 @@ public class GlobalExceptionHandler {
                                         HttpServletResponse response) {
         Integer code = e.getCode() == null ? ResultCode.ERROR.getCode() : e.getCode();
         String msg = e.getMsg() == null ? ResultCode.ERROR.getMsg() : e.getMsg();
+        setResponseCode(response, code);
+        return R.fail(code, msg);
+    }
+
+    /**
+     * 针对调用 Feign 产生的异常情况进行处理
+     *
+     * @param e 异常
+     * @param request 请求 Http
+     * @param response 响应 Http
+     * @return 处理结果
+     */
+    @ExceptionHandler({FeignException.class})
+    public R<?> handleFeignException(FeignException e,
+                                     HttpServletRequest request,
+                                     HttpServletResponse response) {
+        String responseBody = e.responseBody()
+                .map(byteBuffer -> new String(byteBuffer.array(), StandardCharsets.UTF_8))
+                .orElse("");
+        R<Void> result = JsonUtil.string2Obj(responseBody, new TypeReference<>() {});
+        Integer code = result == null ? ResultCode.ERROR.getCode() : result.getCode();
+        String msg = result == null ? ResultCode.ERROR.getMsg() : result.getMsg();
         setResponseCode(response, code);
         return R.fail(code, msg);
     }
