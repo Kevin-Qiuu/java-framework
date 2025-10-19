@@ -20,7 +20,7 @@ public class SysUser extends BaseDO implements Serializable {
     /**
      * 电话号码
      */
-    private Encrypt phoneNumber;
+    private Encrypt phoneNumber = new Encrypt();
 
     /**
      * 密码

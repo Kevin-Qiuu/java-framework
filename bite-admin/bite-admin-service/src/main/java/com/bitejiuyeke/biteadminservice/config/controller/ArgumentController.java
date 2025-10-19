@@ -69,7 +69,7 @@ public class ArgumentController implements ArgumentFeignClient {
      */
     @Override
     @GetMapping("/argument/configKey/{configKey}")
-    public R<ArgVO> argumentByConfigKey(@PathVariable("configKey") @NotBlank(message = "参数键为空！") String configKey) {
+    public R<ArgVO> argumentByConfigKey(@PathVariable("configKey") String configKey) {
         ArgDTO argDTO = sysArgumentService.argumentByConfigKey(configKey);
         if (argDTO == null) {
             return R.ok(null);
@@ -86,8 +86,7 @@ public class ArgumentController implements ArgumentFeignClient {
      * @return 参数值列表
      */
     @PostMapping("/argument/configKeys")
-    public R<List<ArgVO>> argumentByConfigKeys(@RequestBody
-                                               @NotBlank(message = "传入列表或其中元素是空值") List<String> configKeys) {
+    public R<List<ArgVO>> argumentByConfigKeys(@RequestBody List<String> configKeys) {
         List<ArgDTO> argDTOs = sysArgumentService.argumentByConfigKeys(configKeys);
         return R.ok(BeanCopyUtil.copyListProperties(argDTOs, ArgVO::new));
     }

@@ -63,6 +63,6 @@ public interface MapFeignClient {
      * @return 城市信息
      */
     @PostMapping("/map/locateCityByLocation")
-    R<RegionCityVO> locateCityByLocation(LocationDTO locationDTO);
+    R<RegionCityVO> locateCityByLocation(@Validated LocationDTO locationDTO);
 
 }

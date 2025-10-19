@@ -63,7 +63,7 @@ public class MapController implements MapFeignClient {
 
     @Override
     @PostMapping("/map/search")
-    public R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@Validated @RequestBody SearchPoiReqDTO searchPoiDTO) {
+    public R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@RequestBody SearchPoiReqDTO searchPoiDTO) {
         BasePageDTO<SearchPoiDTO> basePageDTO = mapService.searchSuggestOnMap(searchPoiDTO);
         BasePageVO<SearchPoiVO> basePageVO = new BasePageVO<>();
         BeanCopyUtil.copyProperties(basePageDTO, basePageVO);
@@ -74,7 +74,7 @@ public class MapController implements MapFeignClient {
 
     @Override
     @PostMapping("/map/locateCityByLocation")
-    public R<RegionCityVO> locateCityByLocation(@Validated @RequestBody LocationDTO locationDTO) {
+    public R<RegionCityVO> locateCityByLocation(@RequestBody LocationDTO locationDTO) {
        RegionDTO regionDTO = mapService.locateCityByLocation(locationDTO);
        RegionCityVO regionCityVO = new RegionCityVO();
        BeanCopyUtil.copyProperties(regionDTO, regionCityVO);

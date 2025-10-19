@@ -23,8 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
-public class AppUserService implements IAppUserService {
+public class AppUserServiceImpl implements IAppUserService {
 
     /**
      * mapper 服务
@@ -154,5 +157,27 @@ public class AppUserService implements IAppUserService {
         return appUserDTO;
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @param userId 用户 id
+     * @return 用户信息
+     */
+    @Override
+    public AppUserDTO findById(Long userId) {
+        AppUser appUser = appUserMapper.selectOne(new LambdaQueryWrapper<AppUser>().select().eq(AppUser::getId, userId));
+        return convertToAppUserDTO(appUser);
+    }
 
+    /**
+     * 获取用户信息列表
+     *
+     * @param userIds 用户 id 列表
+     * @return 用户信息
+     */
+    @Override
+    public List<AppUserDTO> findUserList(List<Long> userIds) {
+        List<AppUser> appUsers = appUserMapper.selectList(new LambdaQueryWrapper<AppUser>().select().in(AppUser::getId, userIds));
+        return appUsers.stream().filter(Objects::nonNull).map(this::convertToAppUserDTO).toList();
+    }
 }

@@ -57,9 +57,8 @@ public class RabbitMqConfig {
         return QueueBuilder.durable("testQueue").build();
     }
 
-   /**
+    /**
      * 队列 起名：DirectQueue
-     *
      */
     @Bean
     public Queue directQueue() {
@@ -84,7 +83,7 @@ public class RabbitMqConfig {
      */
     @Bean
     DirectExchange directExchange() {
-        return new DirectExchange(exchangeName,true,false);
+        return new DirectExchange(exchangeName, true, false);
     }
 
     /**
@@ -109,7 +108,7 @@ public class RabbitMqConfig {
 
 
         // 一般设置一下队列的持久化就好,其余两个就是默认false
-        return new Queue(dlxExchangeName,true);
+        return new Queue(dlxExchangeName, true);
     }
 
     /**
@@ -119,7 +118,7 @@ public class RabbitMqConfig {
      */
     @Bean
     DirectExchange dlxExchange() {
-        return new DirectExchange(dlxExchangeName,true,false);
+        return new DirectExchange(dlxExchangeName, true, false);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.bitejiuyeke.biteadminservice.user.service.ISysUserService;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
+import com.bitejiuyeke.bitecommonrabbitmq.component.TaskProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ public class SysUserController {
 
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private TaskProducer taskProducer;
+
 
     @PostMapping("/login/password")
     public R<TokenVO> loginByPassword(@Validated @RequestBody LoginPasswordDTO loginPasswordDTO) {
@@ -60,6 +64,12 @@ public class SysUserController {
     @GetMapping("/login_info/get")
     public R<SysUserVO> getLoginInfo() {
         return R.ok(sysUserService.getLoginInfo().convertToVO());
+    }
+
+    @PostMapping("/upload/sysUser")
+    public R<Boolean> uploadAppUserInfo(@RequestBody SysUserDTO sysUserDTO) {
+        taskProducer.sendTaskToMq("upload", sysUserDTO);
+        return R.ok();
     }
 
 }

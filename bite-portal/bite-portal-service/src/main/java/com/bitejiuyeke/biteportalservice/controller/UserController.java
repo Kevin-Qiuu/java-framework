@@ -5,6 +5,8 @@ import com.bitejiuyeke.biteadminapi.user.domain.vo.AppUserVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
+import com.bitejiuyeke.biteportalservice.domain.dto.LoginUserInfoDTO;
+import com.bitejiuyeke.biteportalservice.domain.vo.LoginUserInfoVO;
 import com.bitejiuyeke.biteportalservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -48,5 +50,15 @@ public class UserController {
         userService.editUserInfo(reqDTO);
         return R.ok();
     }
+
+    /**
+     * 获取登录用户的相关信息
+     * @return LoginUserInfoVO
+     */
+    @GetMapping("/user/find")
+    public R<LoginUserInfoVO> getLoginUserInfo() {
+        return R.ok(userService.getLoginUserInfo().convertToVO());
+    }
+
 
 }

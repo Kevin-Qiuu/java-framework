@@ -1,5 +1,6 @@
 package com.bitejiuyeke.biteadminservice.user.controller;
 
+import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.vo.AppUserVO;
 import com.bitejiuyeke.biteadminapi.user.feign.AppUserFeignClient;
@@ -8,9 +9,15 @@ import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/app_user")
@@ -38,7 +45,7 @@ public class AppUserController implements AppUserFeignClient {
      */
     @Override
     @PostMapping("/login/phone")
-    public R<TokenVO> loginByPhone(@RequestBody @Validated LoginByPhoneReqDTO reqDTO) {
+    public R<TokenVO> loginByPhone(@RequestBody LoginByPhoneReqDTO reqDTO) {
         TokenDTO tokenDTO = appUserService.loginByPhone(reqDTO);
         if (tokenDTO == null) {
             return R.ok();
@@ -58,5 +65,35 @@ public class AppUserController implements AppUserFeignClient {
         return R.ok();
     }
 
+    /**
+     * 获取用户的信息
+     *
+     * @param userId 用户 id
+     * @return appUser
+     */
+    @Override
+    @GetMapping("/findUser/{userId}")
+    public R<AppUserVO> findById(@PathVariable("userId") Long userId) {
+        AppUserDTO appUserDTO = appUserService.findById(userId);
+        if (appUserDTO == null) {
+            return R.ok();
+        }
+        return R.ok(appUserDTO.convertToVO());
+    }
 
+    /**
+     * 获取用户信息（列表）
+     *
+     * @param userIds 用户 id 列表
+     * @return 返回列表
+     */
+    @Override
+    @PostMapping("/findUserList")
+    public R<List<AppUserVO>> findUserList(@RequestBody List<Long> userIds) {
+        List<AppUserDTO> appUserDTOS = appUserService.findUserList(userIds);
+        return R.ok(appUserDTOS.stream()
+                .filter(Objects::nonNull)
+                .map(AppUserDTO::convertToVO)
+                .toList());
+    }
 }

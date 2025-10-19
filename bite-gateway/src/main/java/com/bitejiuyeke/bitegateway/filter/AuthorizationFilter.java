@@ -74,7 +74,7 @@ public class AuthorizationFilter implements GlobalFilter, Ordered {
 
         // 5、校验用户是否处于登录态
         if (tokenService.isTokenExpired(token)) {
-            return unauthorizedResponse(exchange, ResultCode.TOKEN_OVERTIME);
+            return unauthorizedResponse(exchange, ResultCode.LOGIN_STATUS_OVERTIME);
         }
 
         // 6、从 token 中获取用户信息

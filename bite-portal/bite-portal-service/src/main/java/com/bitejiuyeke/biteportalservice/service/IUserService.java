@@ -2,8 +2,11 @@ package com.bitejiuyeke.biteportalservice.service;
 
 import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
+import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
+import com.bitejiuyeke.biteportalservice.domain.dto.LoginUserInfoDTO;
+import com.bitejiuyeke.biteportalservice.domain.vo.LoginUserInfoVO;
 
 public interface IUserService {
 
@@ -29,4 +32,11 @@ public interface IUserService {
      * @return 用户信息
      */
     AppUserDTO findByPhone(String phoneNumber);
+
+    /**
+     * 获取登录用户信息
+     *
+     * @return LoginUserInfoVO
+     */
+    LoginUserInfoDTO getLoginUserInfo();
 }

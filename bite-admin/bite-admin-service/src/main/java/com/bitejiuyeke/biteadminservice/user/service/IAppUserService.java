@@ -5,6 +5,8 @@ import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 
+import java.util.List;
+
 public interface IAppUserService {
 
     /**
@@ -28,4 +30,19 @@ public interface IAppUserService {
      */
     void editUserInfo(EditUserReqDTO reqDTO);
 
+    /**
+     * 获取用户的信息
+     *
+     * @param userId 用户 id
+     * @return appUser
+     */
+    AppUserDTO findById(Long userId);
+
+    /**
+     * 获取用户信息（列表）
+     *
+     * @param userIds 用户 id 列表
+     * @return 返回列表
+     */
+    List<AppUserDTO> findUserList(List<Long> userIds);
 }

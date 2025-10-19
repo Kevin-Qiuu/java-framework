@@ -7,11 +7,14 @@ import com.bitejiuyeke.biteadminapi.user.feign.AppUserFeignClient;
 import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
+import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.feign.CaptchaFeignClient;
+import com.bitejiuyeke.biteportalservice.domain.dto.LoginUserInfoDTO;
 import com.bitejiuyeke.biteportalservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +22,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements IUserService {
 
+    /**
+     * appUser 服务 （feign）
+     */
     @Autowired
     private AppUserFeignClient appUserFeignClient;
 
+    /**
+     * token 组件
+     */
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 通过手机号码查询用户信息
@@ -75,5 +86,26 @@ public class UserServiceImpl implements IUserService {
         if (result.getCode() != ResultCode.SUCCESS.getCode()) {
             throw new ServiceException(result.getMsg(), ResultCode.INVALID_PARA.getCode());
         }
+    }
+
+    /**
+     * 获取登录用户信息
+     *
+     * @return LoginUserInfoDTO
+     */
+    @Override
+    public LoginUserInfoDTO getLoginUserInfo() {
+        LoginUserDTO loginUserDTO = tokenService.getLoginUser();
+        if (loginUserDTO == null) {
+            throw new ServiceException(ResultCode.LOGIN_STATUS_OVERTIME);
+        }
+        R<AppUserVO> findRet = appUserFeignClient.findById(Long.valueOf(loginUserDTO.getUserId()));
+        if (findRet == null) {
+            throw new ServiceException("用户信息查询失败！", ResultCode.ERROR.getCode());
+        }
+        LoginUserInfoDTO loginUserInfoDTO = new LoginUserInfoDTO();
+        BeanCopyUtil.copyProperties(loginUserDTO, loginUserInfoDTO);
+        BeanCopyUtil.copyProperties(findRet.getData(), loginUserInfoDTO);
+        return loginUserInfoDTO;
     }
 }

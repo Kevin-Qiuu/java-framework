@@ -111,8 +111,7 @@ public class DictionaryController implements DictionaryFeignClient {
      */
     @Override
     @GetMapping("/dictionaryData/typeKey/{typeKey}")
-    public R<List<DicDataVO>> selectDicDataByTypeKey(@PathVariable("typeKey")
-                                                     @NotBlank(message = "字典类型键为空！") String typeKey) {
+    public R<List<DicDataVO>> selectDicDataByTypeKey(@PathVariable("typeKey") String typeKey) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByTypeKey(typeKey);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
@@ -125,9 +124,7 @@ public class DictionaryController implements DictionaryFeignClient {
      */
     @Override
     @PostMapping("/dictionaryData/typeKeys")
-    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody
-                                                                   @NotBlank(message = "字典类型键列表为空或者有空值！")
-                                                                   List<String> typeKeys) {
+    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody List<String> typeKeys) {
         Map<String, List<DicDataDTO>> dicDataDTOMap = sysDictionaryService.selectDicDataByTypeKeys(typeKeys);
         Map<String, List<DicDataVO>> dicDataVOMap = new HashMap<>();
         for (Map.Entry<String, List<DicDataDTO>> entry : dicDataDTOMap.entrySet()) {
@@ -145,8 +142,7 @@ public class DictionaryController implements DictionaryFeignClient {
      */
     @Override
     @GetMapping("/dictionaryData/dataKey/{dataKey}")
-    public R<DicDataVO> selectDicDataByDataKey(@PathVariable("dataKey")
-                                               @NotBlank(message = "字典数据键为空！") String dataKey) {
+    public R<DicDataVO> selectDicDataByDataKey(@PathVariable("dataKey") String dataKey) {
         DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(dataKey);
         if (dicDataDTO == null)
             return R.ok(null);
@@ -163,9 +159,7 @@ public class DictionaryController implements DictionaryFeignClient {
      */
     @Override
     @PostMapping("/dictionaryData/dataKeys")
-    public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody
-                                                      @NotBlank(message = "字典类型键列表为空或者有空值！")
-                                                      List<String> dataKeys) {
+    public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody List<String> dataKeys) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKeys(dataKeys);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
