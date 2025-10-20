@@ -1,9 +1,7 @@
 package com.bitejiuyeke.bitefileservice.service.impl;
 
-import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
-import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
-import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitefileservice.config.COSProperties;
 import com.bitejiuyeke.bitefileservice.domain.dto.COSSignDTO;
 import com.bitejiuyeke.bitefileservice.domain.dto.FileDTO;
@@ -16,11 +14,9 @@ import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;

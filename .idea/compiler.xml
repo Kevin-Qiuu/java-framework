@@ -9,19 +9,27 @@
         <outputRelativeToContentRoot value="true" />
         <module name="bite-file-api" />
         <module name="bite-file-service" />
+        <module name="bite-notify-service" />
         <module name="bite-admin-api" />
+        <module name="bite-common-message" />
         <module name="bite-common-domain" />
         <module name="bite-common-redis" />
         <module name="bite-gateway" />
-        <module name="bite-mstemplate-api" />
+        <module name="bite-portal-service" />
+        <module name="bite-common-security" />
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
         <module name="bite-admin-service" />
+        <module name="bite-notify-api" />
         <module name="bite-common-cache" />
-        <module name="bite-commom-security" />
-        <module name="bite-mstemplate-service" />
+        <module name="bite-portal-api" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="bite-mstemplate" target="17" />
+      <module name="bite-mstemplate-api" target="17" />
+      <module name="bite-mstemplate-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -29,13 +37,14 @@
       <module name="bite-admin" options="" />
       <module name="bite-admin-api" options="-parameters" />
       <module name="bite-admin-service" options="-parameters" />
-      <module name="bite-commom-security" options="-parameters" />
       <module name="bite-common" options="" />
       <module name="bite-common-cache" options="-parameters" />
       <module name="bite-common-core" options="-parameters" />
       <module name="bite-common-domain" options="-parameters" />
+      <module name="bite-common-message" options="-parameters" />
       <module name="bite-common-rabbitmq" options="-parameters" />
       <module name="bite-common-redis" options="-parameters" />
+      <module name="bite-common-security" options="-parameters" />
       <module name="bite-file" options="" />
       <module name="bite-file-api" options="-parameters" />
       <module name="bite-file-service" options="-parameters" />
@@ -43,6 +52,12 @@
       <module name="bite-mstemplate" options="" />
       <module name="bite-mstemplate-api" options="-parameters" />
       <module name="bite-mstemplate-service" options="-parameters" />
+      <module name="bite-notify" options="" />
+      <module name="bite-notify-api" options="-parameters" />
+      <module name="bite-notify-service" options="-parameters" />
+      <module name="bite-portal" options="" />
+      <module name="bite-portal-api" options="-parameters" />
+      <module name="bite-portal-service" options="-parameters" />
     </option>
   </component>
 </project>

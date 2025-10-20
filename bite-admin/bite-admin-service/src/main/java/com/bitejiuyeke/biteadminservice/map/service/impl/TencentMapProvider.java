@@ -7,7 +7,7 @@ import com.bitejiuyeke.biteadminservice.map.domain.dto.PoiListDTO;
 import com.bitejiuyeke.biteadminservice.map.domain.dto.SuggestSearchDTO;
 import com.bitejiuyeke.biteadminservice.map.service.IMapProvider;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
-import com.bitejiuyeke.bitecommonsecurity.exception.ServiceException;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

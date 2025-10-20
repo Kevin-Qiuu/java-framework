@@ -22,7 +22,7 @@ public class MapConstants {
     /**
      * 热门城市 region code
      */
-    public final static List<String> CACHE_MAP_CITY_HOT_REGION_CODE = List.of("110000", "310000", "440100", "440300", "30100", "510100","370200");
+    public final static String CACHE_MAP_CITY_HOT_REGION_CODE_CONFIG_KEY = "sys_hot_city_region_code";
 
     /**
      * 热门城市缓存 key

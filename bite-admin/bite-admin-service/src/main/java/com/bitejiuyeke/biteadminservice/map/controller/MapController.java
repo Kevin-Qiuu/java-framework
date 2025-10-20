@@ -25,8 +25,6 @@ public class MapController implements MapFeignClient {
 
     @Autowired
     private IMapService mapService;
-    @Autowired
-    private IMapProvider mapProvider;
 
     @Override
     @GetMapping("/map/cityList")
@@ -56,8 +54,8 @@ public class MapController implements MapFeignClient {
     }
 
     @Override
-    @GetMapping("/map/regionChildrenList")
-    public R<List<RegionVO>> getRegionChildrenList(@RequestParam String parentCode) {
+    @GetMapping("/map/regionChildrenList/{parentCode}")
+    public R<List<RegionVO>> getRegionChildrenList(@PathVariable("parentCode") String parentCode){
         List<RegionDTO> regionChildrenDTOList = mapService.getRegionChildrenList(parentCode);
         List<RegionVO> regionChildrenVOList = BeanCopyUtil.copyListProperties(regionChildrenDTOList, RegionVO::new);
         return R.ok(regionChildrenVOList);
@@ -65,7 +63,7 @@ public class MapController implements MapFeignClient {
 
     @Override
     @PostMapping("/map/search")
-    public R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@Validated @RequestBody SearchPoiReqDTO searchPoiDTO) {
+    public R<BasePageVO<SearchPoiVO>> searchSuggestOnMap(@RequestBody SearchPoiReqDTO searchPoiDTO) {
         BasePageDTO<SearchPoiDTO> basePageDTO = mapService.searchSuggestOnMap(searchPoiDTO);
         BasePageVO<SearchPoiVO> basePageVO = new BasePageVO<>();
         BeanCopyUtil.copyProperties(basePageDTO, basePageVO);
@@ -76,7 +74,7 @@ public class MapController implements MapFeignClient {
 
     @Override
     @PostMapping("/map/locateCityByLocation")
-    public R<RegionCityVO> locateCityByLocation(@Validated @RequestBody LocationDTO locationDTO) {
+    public R<RegionCityVO> locateCityByLocation(@RequestBody LocationDTO locationDTO) {
        RegionDTO regionDTO = mapService.locateCityByLocation(locationDTO);
        RegionCityVO regionCityVO = new RegionCityVO();
        BeanCopyUtil.copyProperties(regionDTO, regionCityVO);

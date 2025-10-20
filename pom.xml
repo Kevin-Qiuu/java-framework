@@ -14,14 +14,12 @@
     <artifactId>FrameworkJava</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>bite-mstemplate</module>
         <module>bite-gateway</module>
         <module>bite-common</module>
-        <module>bite-common/bite-common-core</module>
-        <module>bite-common/bite-common-domain</module>
-        <module>bite-common/bite-commom-security</module>
         <module>bite-file</module>
         <module>bite-admin</module>
+        <module>bite-portal</module>
+        <module>bite-notify</module>
     </modules>
     <version>0.0.1-SNAPSHOT</version>
     <description>FrameworkJava</description>
@@ -46,11 +44,11 @@
         <httpclient.version>4.5.13</httpclient.version>
         <tencent-cloud.cos.version>5.6.227</tencent-cloud.cos.version>
         <tencent-cloud.cos-sts.version>3.1.0</tencent-cloud.cos-sts.version>
-        <jwt.version>0.9.1</jwt.version>
+        <jwt.version>0.11.5</jwt.version>
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <hutool.version>5.8.25</hutool.version>
         <aliyun.sms.version>3.1.1</aliyun.sms.version>
-
+        <aliyun.verifycode.version>2.0.0</aliyun.verifycode.version>
         <!--        &lt;!&ndash;运行环境&ndash;&gt;-->
         <!--        <runenv>test</runenv>-->
         <!--        <java.opts.default>-Xmx256m</java.opts.default>-->
@@ -117,6 +115,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson.version}</version>
@@ -124,8 +128,22 @@
 
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
+                <artifactId>jjwt-api</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
@@ -163,6 +181,18 @@
                 <version>${httpclient.version}</version>
             </dependency>
 
+            <!--阿里云短信认证服务-->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>alibabacloud-dypnsapi20170525</artifactId>
+                <version>${aliyun.verifycode.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dypnsapi20170525</artifactId>
+                <version>${aliyun.verifycode.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

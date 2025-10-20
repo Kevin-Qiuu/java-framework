@@ -2,22 +2,22 @@ package com.bitejiuyeke.biteadminapi.map.feign;
 
 
 import com.bitejiuyeke.biteadminapi.map.domain.dto.LocationDTO;
-import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.dto.SearchPoiReqDTO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionCityVO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.RegionVO;
 import com.bitejiuyeke.biteadminapi.map.domain.vo.SearchPoiVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@ConditionalOnProperty(name = "feign.bite-admin.feignEnabled", havingValue = "true")
+@FeignClient(contextId = "mapFeignClient", name = "bite-admin")
 public interface MapFeignClient {
 
     /**
@@ -46,8 +46,8 @@ public interface MapFeignClient {
      * @param parentCode 父区域 Id
      * @return List<RegionVO>
      */
-    @GetMapping("/map/regionChildrenList")
-    R<List<RegionVO>> getRegionChildrenList(@RequestParam String parentCode);
+    @GetMapping("/map/regionChildrenList/{parentCode}")
+    R<List<RegionVO>> getRegionChildrenList(@PathVariable("parentCode") String parentCode);
 
     /**
      * 根据关键词查询某一地点的相关 poi
@@ -63,6 +63,6 @@ public interface MapFeignClient {
      * @return 城市信息
      */
     @PostMapping("/map/locateCityByLocation")
-    R<RegionCityVO> locateCityByLocation(LocationDTO locationDTO);
+    R<RegionCityVO> locateCityByLocation(@Validated LocationDTO locationDTO);
 
 }

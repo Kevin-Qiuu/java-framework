@@ -5,6 +5,7 @@ import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -27,6 +28,7 @@ public class RedisService {
      * redis 操作模板类
      */
     @Autowired
+    @Qualifier("JavaFrameWork-RedisTemplate")
     private RedisTemplate redisTemplate;
 
     //***************************** 基本操作 *****************************
@@ -93,13 +95,23 @@ public class RedisService {
         redisTemplate.rename(oldKey, newKey);
     }
 
+    /**
+     * 删除对象
+     * @param key 对象的键
+     * @return 删除是否成功，成功=True，失败=False
+     */
+    public Boolean deleteObject(final String key) {
+        return redisTemplate.delete(key);
+    }
+
+
     //***************************** String 类型 *****************************
     public <T> void setCacheObject(final String key, final T value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
     public <T> void setCacheObject(final String key, final T value, long timeOut) {
-        redisTemplate.opsForValue().set(key, value, timeOut);
+        redisTemplate.opsForValue().set(key, value, timeOut, TimeUnit.SECONDS);
     }
 
     public <T> void setCacheObject(final String key, final T value, long timeOut, TimeUnit timeUnit) {
@@ -292,7 +304,7 @@ public class RedisService {
      * @param key Redis 键
      * @param members 元素
      */
-    public void addMember(final String key, Object... members) {
+    public void addMemberSet(final String key, Object... members) {
         redisTemplate.opsForSet().add(key, members);
     }
 
@@ -301,7 +313,7 @@ public class RedisService {
      * @param key Redis 键
      * @param members 元素
      */
-    public void delMember(final String key, Object... members) {
+    public void delMemberSet(final String key, Object... members) {
         redisTemplate.opsForSet().remove(key, members);
     }
 

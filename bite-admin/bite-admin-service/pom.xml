@@ -29,6 +29,18 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
+        <!--        feign 相关配置-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!--        负载均衡模块，这里主要用于 feign 的路由-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <!--        Spring Cloud 提供的一个引导模块 配置文件的早期加载、配置中心集成         -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -83,6 +95,13 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.bitejiuyeke</groupId>
+            <artifactId>bite-common-rabbitmq</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>com.bitejiuyeke</groupId>
@@ -92,8 +111,15 @@
 
         <dependency>
             <groupId>com.bitejiuyeke</groupId>
-            <artifactId>bite-commom-security</artifactId>
+            <artifactId>bite-common-security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+
     </dependencies>
 </project>

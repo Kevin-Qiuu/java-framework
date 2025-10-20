@@ -34,14 +34,11 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-
         </dependency>
 
         <!-- SpringCloud Alibaba Nacos Config -->
         <dependency>
-
             <groupId>com.alibaba.cloud</groupId>
-
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
@@ -63,15 +60,12 @@
 
         <dependency>
             <groupId>com.bitejiuyeke</groupId>
-            <artifactId>bite-common-core</artifactId>
+            <artifactId>bite-common-security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.bitejiuyeke</groupId>-->
-<!--            <artifactId>bite-commom-security</artifactId>-->
-<!--            <version>0.0.1-SNAPSHOT</version>-->
-<!--        </dependency>-->
+
+
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
