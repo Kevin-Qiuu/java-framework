@@ -165,6 +165,9 @@ public class AppUserServiceImpl implements IAppUserService {
      */
     @Override
     public AppUserDTO findById(Long userId) {
+        if (userId == null) {
+            throw new ServiceException("用户 id 为空！", ResultCode.INVALID_PARA.getCode());
+        }
         AppUser appUser = appUserMapper.selectOne(new LambdaQueryWrapper<AppUser>().select().eq(AppUser::getId, userId));
         return convertToAppUserDTO(appUser);
     }
@@ -177,6 +180,9 @@ public class AppUserServiceImpl implements IAppUserService {
      */
     @Override
     public List<AppUserDTO> findUserList(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            throw new ServiceException("用户 id 列表为空！", ResultCode.INVALID_PARA.getCode());
+        }
         List<AppUser> appUsers = appUserMapper.selectList(new LambdaQueryWrapper<AppUser>().select().in(AppUser::getId, userIds));
         return appUsers.stream().filter(Objects::nonNull).map(this::convertToAppUserDTO).toList();
     }

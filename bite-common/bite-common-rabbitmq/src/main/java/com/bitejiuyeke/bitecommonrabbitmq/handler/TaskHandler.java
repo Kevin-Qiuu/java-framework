@@ -1,7 +1,9 @@
 package com.bitejiuyeke.bitecommonrabbitmq.handler;
 
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
+
 @FunctionalInterface
-public interface TaskHandler<T>{
+public interface TaskHandler<T> {
 
     /**
      * 任务处理
@@ -9,6 +11,6 @@ public interface TaskHandler<T>{
      * @param payload String 类型的载荷
      * @return T
      */
-    T handleTask(String payload);
+    T handleTask(String payload) throws ServiceException;
 
 }

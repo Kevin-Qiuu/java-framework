@@ -1,12 +1,14 @@
 package com.bitejiuyeke.biteadminservice.config.service;
 
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgListReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.vo.ArgVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import jakarta.validation.constraints.NotBlank;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -52,6 +54,6 @@ public interface ISysArgumentService {
      * @param configKeys 参数键列表
      * @return 参数值列表
      */
-    List<ArgDTO> argumentByConfigKeys(List<String> configKeys);
+    List<ArgDTO> argumentByConfigKeys(ArgListReqDTO configKeys);
 
 }

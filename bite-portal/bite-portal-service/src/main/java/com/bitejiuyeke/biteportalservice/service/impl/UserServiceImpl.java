@@ -108,4 +108,12 @@ public class UserServiceImpl implements IUserService {
         BeanCopyUtil.copyProperties(findRet.getData(), loginUserInfoDTO);
         return loginUserInfoDTO;
     }
+
+    /**
+     * 用户登出
+     */
+    @Override
+    public void logout() {
+        tokenService.defLoginUser();
+    }
 }

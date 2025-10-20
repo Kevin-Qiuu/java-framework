@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@RequestMapping("/user")
 @RestController
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
-   /**
+    /**
      * 根据手机号查询用户信息
      *
      * @param phoneNumber 手机号
@@ -45,7 +46,7 @@ public class UserController {
      *
      * @param reqDTO 编辑请求体
      */
-    @PostMapping("/user/edit")
+    @PostMapping("/edit")
     public R<Void> editUserInfo(@RequestBody @Validated EditUserReqDTO reqDTO) {
         userService.editUserInfo(reqDTO);
         return R.ok();
@@ -53,11 +54,19 @@ public class UserController {
 
     /**
      * 获取登录用户的相关信息
+     *
      * @return LoginUserInfoVO
      */
-    @GetMapping("/user/find")
+    @GetMapping("/find")
     public R<LoginUserInfoVO> getLoginUserInfo() {
         return R.ok(userService.getLoginUserInfo().convertToVO());
+    }
+
+
+    @PostMapping("/logout")
+    public R<Void> logout() {
+        userService.logout();
+        return R.ok();
     }
 
 

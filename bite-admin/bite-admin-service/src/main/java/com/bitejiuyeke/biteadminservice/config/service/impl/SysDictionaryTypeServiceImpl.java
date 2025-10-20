@@ -193,11 +193,11 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     }
 
     @Override
-    public Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(List<String> typeKeys) {
+    public Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(DicListReqDTO dicListReqDTO) {
         Map<String, List<DicDataDTO>> dicDataDTOMap = new HashMap<>();
         List<SysDictionaryData> selectList = sysDictionaryDataMapper
                 .selectList(new LambdaQueryWrapper<SysDictionaryData>()
-                        .in(SysDictionaryData::getTypeKey, typeKeys));
+                        .in(SysDictionaryData::getTypeKey, dicListReqDTO.getKeys()));
         for (SysDictionaryData sysDictionaryData : selectList) {
             if (!dicDataDTOMap.containsKey(sysDictionaryData.getTypeKey())) {
                 dicDataDTOMap.put(sysDictionaryData.getTypeKey(), new ArrayList<>());
@@ -223,10 +223,10 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     }
 
     @Override
-    public List<DicDataDTO> selectDicDataByDataKeys(List<String> dataKeys) {
+    public List<DicDataDTO> selectDicDataByDataKeys(DicListReqDTO dicListReqDTO) {
         List<SysDictionaryData> selectList = sysDictionaryDataMapper
                 .selectList(new LambdaQueryWrapper<SysDictionaryData>()
-                        .in(SysDictionaryData::getDataKey, dataKeys));
+                        .in(SysDictionaryData::getDataKey, dicListReqDTO.getKeys()));
         return BeanCopyUtil.copyListProperties(selectList, DicDataDTO::new);
     }
 }

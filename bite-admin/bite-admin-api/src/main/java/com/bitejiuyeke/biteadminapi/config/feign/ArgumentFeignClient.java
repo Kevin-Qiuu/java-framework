@@ -1,6 +1,7 @@
 package com.bitejiuyeke.biteadminapi.config.feign;
 
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgListReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.vo.ArgVO;
@@ -8,6 +9,7 @@ import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +38,7 @@ public interface ArgumentFeignClient {
      * @return 参数的 id
      */
     @PostMapping("/argument/edit")
-    R<Long> argumentEdit(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO);
+    R<Long> argumentEdit(@RequestBody ArgWriteReqDTO argWriteReqDTO);
 
     /**
      * 添加参数
@@ -45,7 +47,7 @@ public interface ArgumentFeignClient {
      * @return 参数的 id
      */
     @PostMapping("/argument/add")
-    R<Long> argumentAdd(@RequestBody @Validated ArgWriteReqDTO argWriteReqDTO);
+    R<Long> argumentAdd(@RequestBody ArgWriteReqDTO argWriteReqDTO);
 
     /**
      * 根据一个参数键获取对应的参数值
@@ -59,12 +61,11 @@ public interface ArgumentFeignClient {
     /**
      * 根据多个参数键获取对应的参数值
      *
-     * @param configKeys 参数键列表
+     * @param argListReqDTO 参数键列表
      * @return 参数值列表
      */
     @PostMapping("/argument/configKeys")
-    R<List<ArgVO>> argumentByConfigKeys(@RequestBody
-                                        @NotBlank(message = "传入列表或其中元素是空值") List<String> configKeys);
+    R<List<ArgVO>> argumentByConfigKeys(@RequestBody @Validated ArgListReqDTO argListReqDTO);
 
 
 }

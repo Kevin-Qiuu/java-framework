@@ -23,7 +23,7 @@ public class CaptchaService {
      * 短信发送服务
      */
     @Autowired
-    private AliSmsService smsService;
+    private AliSmsService aliSmsService;
 
     /**
      * redis 服务
@@ -54,8 +54,7 @@ public class CaptchaService {
      */
     @Value("${sms.send-random-captcha:false}")
     private boolean sendRandomCaptcha;
-    @Autowired
-    private AliSmsService aliSmsService;
+
 
 
     /**

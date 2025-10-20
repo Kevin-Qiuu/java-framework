@@ -1,6 +1,7 @@
 package com.bitejiuyeke.biteadminservice.config.controller;
 
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgListReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.vo.ArgVO;
@@ -10,7 +11,6 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -82,12 +82,13 @@ public class ArgumentController implements ArgumentFeignClient {
     /**
      * 根据多个参数键获取对应的参数值
      *
-     * @param configKeys 参数键列表
+     * @param argListReqDTO 参数键列表
      * @return 参数值列表
      */
+    @Override
     @PostMapping("/argument/configKeys")
-    public R<List<ArgVO>> argumentByConfigKeys(@RequestBody List<String> configKeys) {
-        List<ArgDTO> argDTOs = sysArgumentService.argumentByConfigKeys(configKeys);
+    public R<List<ArgVO>> argumentByConfigKeys(@RequestBody ArgListReqDTO argListReqDTO) {
+        List<ArgDTO> argDTOs = sysArgumentService.argumentByConfigKeys(argListReqDTO);
         return R.ok(BeanCopyUtil.copyListProperties(argDTOs, ArgVO::new));
     }
 

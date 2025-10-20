@@ -110,8 +110,8 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据的 list
      */
     @Override
-    @GetMapping("/dictionaryData/typeKey/{typeKey}")
-    public R<List<DicDataVO>> selectDicDataByTypeKey(@PathVariable("typeKey") String typeKey) {
+    @GetMapping("/dictionaryData/typeKey")
+    public R<List<DicDataVO>> selectDicDataByTypeKey(@RequestParam("typeKey") String typeKey) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByTypeKey(typeKey);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
@@ -119,13 +119,13 @@ public class DictionaryController implements DictionaryFeignClient {
     /**
      * 根据多个字典类型键查询所有的字典数据
      *
-     * @param typeKeys 字典类型键集合（非空）
+     * @param dicListReqDTO 字典类型键集合 dto
      * @return 字典类型键：字典数据
      */
     @Override
     @PostMapping("/dictionaryData/typeKeys")
-    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody List<String> typeKeys) {
-        Map<String, List<DicDataDTO>> dicDataDTOMap = sysDictionaryService.selectDicDataByTypeKeys(typeKeys);
+    public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody DicListReqDTO dicListReqDTO) {
+        Map<String, List<DicDataDTO>> dicDataDTOMap = sysDictionaryService.selectDicDataByTypeKeys(dicListReqDTO);
         Map<String, List<DicDataVO>> dicDataVOMap = new HashMap<>();
         for (Map.Entry<String, List<DicDataDTO>> entry : dicDataDTOMap.entrySet()) {
             dicDataVOMap.put(entry.getKey(),
@@ -141,8 +141,8 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据
      */
     @Override
-    @GetMapping("/dictionaryData/dataKey/{dataKey}")
-    public R<DicDataVO> selectDicDataByDataKey(@PathVariable("dataKey") String dataKey) {
+    @GetMapping("/dictionaryData/dataKey")
+    public R<DicDataVO> selectDicDataByDataKey(@RequestParam("dataKey") String dataKey) {
         DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(dataKey);
         if (dicDataDTO == null)
             return R.ok(null);
@@ -154,13 +154,13 @@ public class DictionaryController implements DictionaryFeignClient {
     /**
      * 根据多个字典数据键查询对应的字典数据
      *
-     * @param dataKeys 字典数据键集合
+     * @param dicListReqDTO 字典数据键集合 dto
      * @return 字典数据的 List
      */
     @Override
     @PostMapping("/dictionaryData/dataKeys")
-    public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody List<String> dataKeys) {
-        List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKeys(dataKeys);
+    public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody DicListReqDTO dicListReqDTO) {
+        List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKeys(dicListReqDTO);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
 }

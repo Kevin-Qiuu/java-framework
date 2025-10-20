@@ -16,7 +16,6 @@
         <module name="bite-common-redis" />
         <module name="bite-gateway" />
         <module name="bite-portal-service" />
-        <module name="bite-mstemplate-api" />
         <module name="bite-common-security" />
         <module name="bite-common-core" />
         <module name="bite-common-rabbitmq" />
@@ -24,9 +23,13 @@
         <module name="bite-notify-api" />
         <module name="bite-common-cache" />
         <module name="bite-portal-api" />
-        <module name="bite-mstemplate-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="bite-mstemplate" target="17" />
+      <module name="bite-mstemplate-api" target="17" />
+      <module name="bite-mstemplate-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

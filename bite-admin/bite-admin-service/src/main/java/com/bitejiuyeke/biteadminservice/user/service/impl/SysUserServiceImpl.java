@@ -2,6 +2,7 @@ package com.bitejiuyeke.biteadminservice.user.service.impl;
 
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.DicDataDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.vo.DicDataVO;
 import com.bitejiuyeke.biteadminapi.config.feign.DictionaryFeignClient;
 import com.bitejiuyeke.biteadminservice.config.service.ISysDictionaryService;
@@ -38,8 +39,6 @@ public class SysUserServiceImpl implements ISysUserService {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private DictionaryFeignClient dictionaryFeignClient;
 
     @Override
     public TokenDTO loginByPassword(LoginPasswordDTO loginPasswordDTO) {
@@ -96,12 +95,9 @@ public class SysUserServiceImpl implements ISysUserService {
             }
 
             // 校验用户的 identity 信息是否合法
-            R<DicDataVO> dicDataVOR = dictionaryFeignClient.selectDicDataByDataKey(sysUserDTO.getIdentity());
-            if (dicDataVOR == null || dicDataVOR.getCode() != ResultCode.SUCCESS.getCode()) {
-                throw new ServiceException(ResultCode.ERROR);
-            }
-            if (dicDataVOR.getData() == null) {
-                throw new ServiceException("用户身份信息不存在！", ResultCode.INVALID_PARA.getCode());
+            DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(sysUserDTO.getIdentity());
+            if (dicDataDTO == null) {
+                throw new ServiceException("指定用户身份信息不存在！", ResultCode.INVALID_PARA.getCode());
             }
 
             BeanCopyUtil.copyProperties(sysUserDTO, sysUser);

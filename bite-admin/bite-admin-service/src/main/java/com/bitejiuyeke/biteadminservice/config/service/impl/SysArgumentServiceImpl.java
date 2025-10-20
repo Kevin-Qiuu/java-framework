@@ -3,6 +3,7 @@ package com.bitejiuyeke.biteadminservice.config.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgDTO;
+import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgListReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgReadReqDTO;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.ArgWriteReqDTO;
 import com.bitejiuyeke.biteadminservice.config.domain.entity.SysArgument;
@@ -99,9 +100,9 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
     }
 
     @Override
-    public List<ArgDTO> argumentByConfigKeys(List<String> configKeys) {
+    public List<ArgDTO> argumentByConfigKeys(ArgListReqDTO argListReqDTO) {
         return sysArgumentMapper.selectList(new LambdaQueryWrapper<SysArgument>().select()
-                .in(SysArgument::getConfigKey, configKeys)).stream().map(sysArgument -> {
+                .in(SysArgument::getConfigKey, argListReqDTO.getConfigKeys())).stream().map(sysArgument -> {
                     ArgDTO argDTO = new ArgDTO();
                     BeanCopyUtil.copyProperties(sysArgument, argDTO);
                     return argDTO;

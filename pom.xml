@@ -14,15 +14,8 @@
     <artifactId>FrameworkJava</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>bite-mstemplate</module>
         <module>bite-gateway</module>
         <module>bite-common</module>
-        <!--        <module>bite-common/bite-common-cache</module>-->
-        <!--        <module>bite-common/bite-common-core</module>-->
-        <!--        <module>bite-common/bite-common-domain</module>-->
-        <!--        <module>bite-common/bite-common-security</module>-->
-        <!--        <module>bite-common/bite-common-rabbitmq</module>-->
-        <!--        <module>bite-common/bite-common-redis</module>-->
         <module>bite-file</module>
         <module>bite-admin</module>
         <module>bite-portal</module>
@@ -133,12 +126,6 @@
                 <version>${redisson.version}</version>
             </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>io.jsonwebtoken</groupId>-->
-            <!--                <artifactId>jjwt</artifactId>-->
-            <!--                <version>${jwt.version}</version>-->
-            <!--            </dependency>-->
-
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
@@ -201,18 +188,12 @@
                 <version>${aliyun.verifycode.version}</version>
             </dependency>
 
-
-             <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>scsp20200702</artifactId>
-            <version>1.9.27</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dypnsapi20170525</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-   </dependencies>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dypnsapi20170525</artifactId>
+                <version>${aliyun.verifycode.version}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <build>

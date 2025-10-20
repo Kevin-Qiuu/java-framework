@@ -143,7 +143,16 @@ public class TokenService {
     }
 
     /**
-     * 根据用户 Token 删除当前用户的登录态
+     * 删除用户登录态（直接根据用户本次请求获取 token，基于 threadLocal）
+     */
+    public void defLoginUser() {
+        HttpServletRequest request = ServletUtil.getRequest();
+        String token = SecurityUtil.getToken(request);
+        delLoginUser(token);
+    }
+
+    /**
+     * 根据用户 Token 删除当前用户的登录态（可单独针对删除用户的来源登录态）
      *
      * @param token 令牌
      */
@@ -151,9 +160,14 @@ public class TokenService {
         // 判断用户 Token 是否已过期
         if (StringUtils.isNotEmpty(token) && isTokenNotExpired(token)) {
             // 删除 Redis 中的用户信息
-            String redisUserLoginKey = getRedisUserLoginKey(JwtUtil.getUserKey(token));
-            String redisUserSessionKey = getRedisUserSessionKey(JwtUtil.getUserId(token));
-            String userSessionId = getUserSessionId(JwtUtil.getUserFrom(token), JwtUtil.getUserKey(token));
+            String userKey = JwtUtil.getUserKey(token);
+            String userId= JwtUtil.getUserId(token);
+            String userFrom = JwtUtil.getUserFrom(token);
+            log.info("用户已登出，用户 id：{}，用户登录来源：{}", userId, userFrom);
+
+            String redisUserLoginKey = getRedisUserLoginKey(userKey);
+            String redisUserSessionKey = getRedisUserSessionKey(userId);
+            String userSessionId = getUserSessionId(userFrom, userKey);
             redisService.deleteObject(redisUserLoginKey);
             redisService.delMemberSet(redisUserSessionKey, userSessionId);
         }

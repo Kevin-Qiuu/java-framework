@@ -59,10 +59,10 @@ public interface ISysDictionaryService {
 
     /**
      * 根据多个字典类型键查询所有的字典数据
-     * @param typeKeys 字典类型键集合（非空）
+     * @param dicListReqDTO 字典类型键集合 dto
      * @return 字典数据的 list
      */
-    Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(List<String> typeKeys);
+    Map<String, List<DicDataDTO>> selectDicDataByTypeKeys(DicListReqDTO dicListReqDTO);
 
     /**
      * 根据一个字数据键查询对应的字典数据
@@ -73,9 +73,9 @@ public interface ISysDictionaryService {
 
     /**
      * 根据多个字典数据键查询对应的字典数据
-     * @param dataKeys 字典数据键集合
+     * @param dicListReqDTO 字典数据键集合 dto
      * @return 字典数据的 List
      */
-    List<DicDataDTO> selectDicDataByDataKeys(List<String> dataKeys);
+    List<DicDataDTO> selectDicDataByDataKeys(DicListReqDTO dicListReqDTO);
 
 }

@@ -39,4 +39,9 @@ public interface IUserService {
      * @return LoginUserInfoVO
      */
     LoginUserInfoDTO getLoginUserInfo();
+
+    /**
+     * 用户登出
+     */
+    void logout();
 }

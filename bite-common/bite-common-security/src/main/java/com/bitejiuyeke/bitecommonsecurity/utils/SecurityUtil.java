@@ -14,6 +14,7 @@ public class SecurityUtil {
      * @return token
      */
     public static String getToken(HttpServletRequest request) {
+        if (request == null) return null;
        String token = request.getHeader(SecurityConstants.AUTHORIZATION);
        return cutTokenPrefix(token);
     }

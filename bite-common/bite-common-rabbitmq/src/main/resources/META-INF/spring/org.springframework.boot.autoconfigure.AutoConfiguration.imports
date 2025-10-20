@@ -1,4 +1,3 @@
 com.bitejiuyeke.bitecommonrabbitmq.config.RabbitMqConfig
 com.bitejiuyeke.bitecommonrabbitmq.component.TaskDispatcher
-com.bitejiuyeke.bitecommonrabbitmq.component.TaskConsumer
 com.bitejiuyeke.bitecommonrabbitmq.component.TaskProducer

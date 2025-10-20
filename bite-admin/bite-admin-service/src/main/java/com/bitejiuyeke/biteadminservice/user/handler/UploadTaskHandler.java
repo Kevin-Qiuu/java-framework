@@ -35,6 +35,7 @@ public class UploadTaskHandler implements TaskHandler<Boolean> {
             sysUserService.addOrEdit(sysUserDTO);
         } catch (ServiceException e) {
             log.error("上传用户信息失败，{}", e.getMsg());
+            throw e;
         }
         return true;
     }

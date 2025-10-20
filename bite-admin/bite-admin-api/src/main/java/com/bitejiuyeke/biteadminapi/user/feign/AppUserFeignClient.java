@@ -9,6 +9,7 @@ import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
@@ -61,7 +62,7 @@ public interface AppUserFeignClient {
      * @return 返回列表
      */
     @PostMapping("/findUserList")
-    R<List<AppUserVO>> findUserList(@RequestBody @NotEmpty(message = "用户 id 列表为空！") List<Long> userIds);
+    R<List<AppUserVO>> findUserList(@RequestBody @NotEmpty(message = "至少需要一个用户 id") List<Long> userIds);
 
 
 }

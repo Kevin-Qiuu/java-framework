@@ -13,12 +13,14 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.UTF8;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -109,27 +111,42 @@ public class GlobalExceptionHandler {
         return R.fail(ResultCode.URL_NOT_FOUND.getCode(), ResultCode.URL_NOT_FOUND.getMsg());
     }
 
+    /**
+     * 处理因 @RequestBody 的级联校验未通过的异常（指的是 HttpBody 的参数校验）
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public R<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
                                                       HttpServletRequest request,
                                                       HttpServletResponse response) {
         String requestURI = request.getRequestURI();
         log.error("请求地址：{}，方法参数不匹配：{}", requestURI, e.getMessage());
-
-        String retMsg = joinMessage(e);
-        setResponseCode(response, ResultCode.INVALID_PARA.getCode());
-        return R.fail(ResultCode.INVALID_PARA.getCode(),
-                !retMsg.isBlank() ? retMsg : ResultCode.INVALID_PARA.getMsg());
-    }
-
-    private String joinMessage(MethodArgumentNotValidException e) {
-        List<ObjectError> allErrors = e.getAllErrors();
-        if (CollectionUtils.isEmpty(allErrors)) {
-            return "";
-        }
-        return allErrors.stream().map(ObjectError::getDefaultMessage)
+        String retMsg = e.getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.joining(CommonConstants.DEFAULT_DELIMITER));
+        return handleCommonException(response, ResultCode.INVALID_PARA.getCode(), retMsg);
     }
+
+    /**
+     * 处理因 @PathVariable、@RequestParam 等参数校验未通过的异常（指的是 Http 方法的参数校验）
+     */
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public R<?> handleHandlerMethodValidationException(HandlerMethodValidationException e,
+                                                       HttpServletRequest request,
+                                                       HttpServletResponse response) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址：{}，方法参数不匹配：{}", requestURI, e.getMessage());
+        String retMsg = e.getAllErrors().stream()
+                .map(MessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(CommonConstants.DEFAULT_DELIMITER));
+        return handleCommonException(response, ResultCode.INVALID_PARA.getCode(), retMsg);
+    }
+
+
+    private R<?> handleCommonException(HttpServletResponse response, int code, String errMsg) {
+        setResponseCode(response, code);
+        return R.fail(code, !errMsg.isBlank() ? errMsg : ResultCode.INVALID_PARA.getMsg());
+    }
+
 
     @ExceptionHandler(ConstraintViolationException.class)
     public R<?> handleConstraintViolationException(ConstraintViolationException e,
@@ -157,8 +174,8 @@ public class GlobalExceptionHandler {
     /**
      * 针对调用 Feign 产生的异常情况进行处理
      *
-     * @param e 异常
-     * @param request 请求 Http
+     * @param e        异常
+     * @param request  请求 Http
      * @param response 响应 Http
      * @return 处理结果
      */
@@ -169,7 +186,8 @@ public class GlobalExceptionHandler {
         String responseBody = e.responseBody()
                 .map(byteBuffer -> new String(byteBuffer.array(), StandardCharsets.UTF_8))
                 .orElse("");
-        R<Void> result = JsonUtil.string2Obj(responseBody, new TypeReference<>() {});
+        R<Void> result = JsonUtil.string2Obj(responseBody, new TypeReference<>() {
+        });
         Integer code = result == null ? ResultCode.ERROR.getCode() : result.getCode();
         String msg = result == null ? ResultCode.ERROR.getMsg() : result.getMsg();
         setResponseCode(response, code);
