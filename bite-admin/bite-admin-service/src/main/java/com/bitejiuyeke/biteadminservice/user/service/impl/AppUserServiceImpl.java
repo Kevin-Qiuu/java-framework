@@ -3,6 +3,7 @@ package com.bitejiuyeke.biteadminservice.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
+import com.bitejiuyeke.biteadminservice.user.config.RabbitMqUserConfig;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.AppUser;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.Encrypt;
 import com.bitejiuyeke.biteadminservice.user.mapper.AppUserMapper;
@@ -18,7 +19,9 @@ import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.feign.CaptchaFeignClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class AppUserServiceImpl implements IAppUserService {
 
@@ -46,6 +50,10 @@ public class AppUserServiceImpl implements IAppUserService {
      */
     @Autowired
     private CaptchaFeignClient captchaFeignClient;
+
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 默认头像 url 地址
@@ -122,6 +130,16 @@ public class AppUserServiceImpl implements IAppUserService {
         }
 
         appUserMapper.updateById(appUser);
+
+        // 发送广播信息，帮助其他服务感知该用户信息已修改，进而进行后续处理
+        AppUserDTO appUserDTO = new AppUserDTO();
+        BeanCopyUtil.copyProperties(appUser, appUserDTO);
+        appUserDTO.setUserId(appUser.getId());
+        try {
+            rabbitTemplate.convertAndSend(RabbitMqUserConfig.EXCHANGE_NAME, "", appUserDTO);
+        } catch (Exception e) {
+            log.error("广播用户信息修改消息发送失败！", e);
+        }
 
     }
 
