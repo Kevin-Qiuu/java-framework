@@ -2,6 +2,7 @@ version: '3.8'
 #启动命令 docker compose -p frameworkjava -f docker-compose-mid.yml up -d
 services:
   frameworkjava-mysql:
+    platform: linux/amd64
     container_name: frameworkjava-mysql
     image: mysql:8.4.2
     ports:
@@ -45,6 +46,7 @@ services:
         soft: 20000
         hard: 40000
   frameworkjava-nacos:
+    platform: linux/amd64
     container_name: frameworkjava-nacos
     image: nacos/nacos-server:v2.2.2
     environment:
@@ -79,6 +81,7 @@ services:
       timeout: 10s
       retries: 10
   frameworkjava-redis:
+    platform: linux/amd64
     container_name: frameworkjava-redis
     image: redis:7.0.15
     ports:
@@ -96,6 +99,7 @@ services:
       timeout: 5s
       retries: 10
   frameworkjava-rabbitmq:
+    platform: linux/amd64
     image: rabbitmq:3.12.6-management
     container_name: frameworkjava-rabbitmq
     restart: always
