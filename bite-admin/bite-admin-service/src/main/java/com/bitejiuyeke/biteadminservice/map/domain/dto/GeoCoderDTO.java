@@ -2,8 +2,10 @@ package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class GeoCoderDTO{
+public class GeoCoderDTO implements Serializable {
 
     /**
      * 行政区划信息

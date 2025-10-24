@@ -3,9 +3,11 @@ package com.bitejiuyeke.biteadminservice.map.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bitejiuyeke.bitecommondomain.domain.entity.BaseDO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @TableName("sys_region")
+@EqualsAndHashCode(callSuper=false)
 public class SysRegion extends BaseDO {
 
 

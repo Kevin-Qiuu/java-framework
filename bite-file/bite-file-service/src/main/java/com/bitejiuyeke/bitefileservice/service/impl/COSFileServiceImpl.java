@@ -2,6 +2,7 @@ package com.bitejiuyeke.bitefileservice.service.impl;
 
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
+import com.bitejiuyeke.bitefileapi.domain.dto.FileUploadDTO;
 import com.bitejiuyeke.bitefileservice.config.COSProperties;
 import com.bitejiuyeke.bitefileservice.domain.dto.COSSignDTO;
 import com.bitejiuyeke.bitefileservice.domain.dto.FileDTO;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -39,24 +41,24 @@ public class COSFileServiceImpl implements IFileService {
     private COSProperties cosProperties;
 
     @Override
-    public FileDTO upload(MultipartFile file) {
-         if (file == null || file.isEmpty()) {
+    public FileDTO upload(MultipartFile multipartFile, String filePrefix) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             log.error("上传文件为空");
             throw new ServiceException(ResultCode.COS_UPLOAD_FAILED);
         }
         FileDTO fileDTO = new FileDTO();
         try {
             // 直接使用 MultipartFile 的 InputStream 进行上传
-            InputStream inputStream = file.getInputStream();
+            InputStream inputStream = multipartFile.getInputStream();
 
             // cos 的存储 Id 是 prefix/UUID+文件后缀名
-            String originalFilename = file.getOriginalFilename();
+            String originalFilename = multipartFile.getOriginalFilename();
             String extName = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String uploadFileKey = cosProperties.getPathPrefix() + UUID.randomUUID() + extName;
+            String uploadFileKey = cosProperties.getPathPrefix() + filePrefix + UUID.randomUUID() + extName;
 
             // 设置文件元数据
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
+            objectMetadata.setContentLength(multipartFile.getSize());
 
             // 创建 PutObjectRequest
             PutObjectRequest putObjectRequest = new PutObjectRequest(cosProperties.getBucketName(),
@@ -72,7 +74,7 @@ public class COSFileServiceImpl implements IFileService {
             fileDTO.setUrl(String.valueOf(objectUrl.toURI()));
             fileDTO.setKey(uploadFileKey);
             fileDTO.setName(originalFilename);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("文件上传至 COS 服务失败");
             throw new ServiceException(ResultCode.COS_UPLOAD_FAILED);
         }

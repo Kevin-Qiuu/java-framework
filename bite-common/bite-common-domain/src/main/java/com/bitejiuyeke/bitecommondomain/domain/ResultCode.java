@@ -86,6 +86,11 @@ public enum ResultCode {
      */
     TOKEN_CHECK_FAILED                      (401004, "令牌验证失败！"),
 
+    /**
+     * 权限不足
+     */
+    PRIVACY_NOT_ENOUGH                      (401005, "权限不足！"),
+
 
     //404
 

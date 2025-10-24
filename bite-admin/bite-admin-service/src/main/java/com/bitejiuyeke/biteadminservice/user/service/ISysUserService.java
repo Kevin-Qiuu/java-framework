@@ -3,6 +3,7 @@ package com.bitejiuyeke.biteadminservice.user.service;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -39,4 +40,19 @@ public interface ISysUserService {
      * @return SysUserDTO
      */
     SysUserDTO getLoginInfo();
+
+
+    /**
+     * 根据表格信息上传系统用户身份
+     *
+     * @param excel 系统用户身份Excel文件
+     */
+    void uploadAppUserInfoFile(MultipartFile excel);
+
+     /**
+     * 根据表格信息上传系统用户身份
+     *
+     * @param excelUrl 系统用户身份Excel文件 url
+     */
+    void uploadAppUserInfoUrl(String excelUrl);
 }

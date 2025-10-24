@@ -1,9 +1,11 @@
 package com.bitejiuyeke.biteadminservice.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
 import com.bitejiuyeke.biteadminservice.user.config.RabbitMqUserConfig;
+import com.bitejiuyeke.biteadminservice.user.domain.dto.AppUserListReqDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.AppUser;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.Encrypt;
 import com.bitejiuyeke.biteadminservice.user.mapper.AppUserMapper;
@@ -13,6 +15,7 @@ import com.bitejiuyeke.bitecommoncore.utils.StringUtil;
 import com.bitejiuyeke.bitecommoncore.utils.VerifyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
@@ -85,8 +88,13 @@ public class AppUserServiceImpl implements IAppUserService {
     @Override
     public TokenDTO loginByPhone(LoginByPhoneReqDTO reqDTO) {
 
+        R<Boolean> booleanR = null;
         // 校验验证码是否正确
-        R<Boolean> booleanR = captchaFeignClient.verifyCaptchaCode(reqDTO);
+        try {
+            booleanR = captchaFeignClient.verifyCaptchaCode(reqDTO);
+        } catch (Exception e) {
+            log.error("调用 captchaFeign 失败：", e);
+        }
         if (booleanR == null) {
             throw new ServiceException(ResultCode.INVALID_CODE);
         }
@@ -203,5 +211,50 @@ public class AppUserServiceImpl implements IAppUserService {
         }
         List<AppUser> appUsers = appUserMapper.selectList(new LambdaQueryWrapper<AppUser>().select().in(AppUser::getId, userIds));
         return appUsers.stream().filter(Objects::nonNull).map(this::convertToAppUserDTO).toList();
+    }
+
+    /**
+     * 获取用户信息（列表&分页）
+     *
+     * @param appUserListReqDTO 用户信息请求体
+     * @return 用户信息列表（分页）
+     */
+    @Override
+    public BasePageDTO<AppUserDTO> getUserList(AppUserListReqDTO appUserListReqDTO) {
+        BasePageDTO<AppUserDTO> pageDTO = new BasePageDTO<>();
+        LambdaQueryWrapper<AppUser> appUserQuery = new LambdaQueryWrapper<>();
+        if (appUserListReqDTO.getUserId() != null) {
+            appUserQuery.eq(AppUser::getId, appUserListReqDTO.getUserId());
+        }
+        if (StringUtils.isNotEmpty(appUserListReqDTO.getNickName())) {
+            appUserQuery.eq(AppUser::getNickName, appUserListReqDTO.getNickName());
+        }
+        if (StringUtils.isNotEmpty(appUserListReqDTO.getPhoneNumber()) && VerifyUtil.checkMobile(appUserListReqDTO.getPhoneNumber())) {
+            appUserQuery.eq(AppUser::getPhoneNumber, new Encrypt(appUserListReqDTO.getPhoneNumber()));
+        }
+        if (StringUtils.isNotEmpty(appUserListReqDTO.getNickName())) {
+            appUserQuery.eq(AppUser::getNickName, appUserListReqDTO.getNickName());
+        }
+
+        // 获取查询总数
+        Long selectCount = appUserMapper.selectCount(appUserQuery);
+        if (selectCount == 0) {
+            return null;
+        }
+        pageDTO.setTotals(selectCount.intValue());
+        pageDTO.setTotalPages(BasePageDTO.calculateTotalPages(selectCount, appUserListReqDTO.getPageSize()));
+
+        // 获取分页 list
+        Page<AppUser> appUserPage = new Page<>(appUserListReqDTO.getPageIndex(), appUserListReqDTO.getPageSize());
+        List<AppUser> records = appUserMapper.selectPage(appUserPage, appUserQuery).getRecords();
+
+        // 判断是否超页
+        if (records.isEmpty()) {
+            pageDTO.setList(null);
+            return pageDTO;
+        }
+
+        pageDTO.setList(records.stream().map(this::convertToAppUserDTO).toList());
+        return pageDTO;
     }
 }

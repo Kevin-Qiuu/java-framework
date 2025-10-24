@@ -16,12 +16,15 @@ import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.feign.CaptchaFeignClient;
 import com.bitejiuyeke.biteportalservice.domain.dto.LoginUserInfoDTO;
 import com.bitejiuyeke.biteportalservice.service.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements IUserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     /**
      * appUser 服务 （feign）
      */
@@ -62,7 +65,12 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public TokenDTO loginByPhone(LoginByPhoneReqDTO reqDTO) {
-        R<TokenVO> tokenVOResult = appUserFeignClient.loginByPhone(reqDTO);
+        R<TokenVO> tokenVOResult = null;
+        try {
+            tokenVOResult = appUserFeignClient.loginByPhone(reqDTO);
+        } catch (Exception e) {
+            log.error("调用 appUserFeignClient 失败：", e);
+        }
         if (tokenVOResult == null) {
             throw new ServiceException(ResultCode.ERROR);
         }

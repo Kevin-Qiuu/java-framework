@@ -2,8 +2,10 @@ package com.bitejiuyeke.biteportalservice.domain.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class LoginUserInfoVO {
+public class LoginUserInfoVO implements Serializable {
 
     /**
      * redis 中存储用户的 key

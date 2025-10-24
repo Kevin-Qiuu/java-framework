@@ -2,8 +2,10 @@ package com.bitejiuyeke.bitecommondomain.exception;
 
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException {
 
     /**
