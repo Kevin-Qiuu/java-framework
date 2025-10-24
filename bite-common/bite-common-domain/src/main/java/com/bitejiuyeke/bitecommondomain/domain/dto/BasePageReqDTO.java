@@ -2,8 +2,10 @@ package com.bitejiuyeke.bitecommondomain.domain.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class BasePageReqDTO {
+public class BasePageReqDTO implements Serializable {
 
     /**
      * 查询页下标

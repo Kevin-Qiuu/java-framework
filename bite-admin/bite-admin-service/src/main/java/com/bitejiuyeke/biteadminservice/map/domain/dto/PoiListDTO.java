@@ -1,10 +1,12 @@
 package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class PoiListDTO extends TencentMapBaseResponseDTO{
 
     /**

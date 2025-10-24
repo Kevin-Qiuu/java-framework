@@ -3,33 +3,48 @@ package com.bitejiuyeke.biteadminservice.user.service.impl;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.DicDataDTO;
-import com.bitejiuyeke.biteadminapi.config.domain.vo.DicDataVO;
-import com.bitejiuyeke.biteadminapi.config.feign.DictionaryFeignClient;
 import com.bitejiuyeke.biteadminservice.config.service.ISysDictionaryService;
+import com.bitejiuyeke.biteadminservice.user.constants.MqTaskTypeConstant;
+import com.bitejiuyeke.biteadminservice.user.constants.UserTypeConstants;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserDTO;
+import com.bitejiuyeke.biteadminservice.user.domain.entity.AppUser;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.Encrypt;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.SysUser;
 import com.bitejiuyeke.biteadminservice.user.mapper.SysUserMapper;
+import com.bitejiuyeke.biteadminservice.user.mq.domain.FileTaskDTO;
 import com.bitejiuyeke.biteadminservice.user.service.ISysUserService;
-import com.bitejiuyeke.bitecommoncore.utils.AESUtil;
-import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
-import com.bitejiuyeke.bitecommoncore.utils.VerifyUtil;
+import com.bitejiuyeke.bitecommoncore.utils.*;
+import com.bitejiuyeke.bitecommondomain.constants.FilePrefixConstants;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
+import com.bitejiuyeke.bitecommonrabbitmq.component.TaskProducer;
+import com.bitejiuyeke.bitecommonrabbitmq.handler.TaskHandler;
 import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
+import com.bitejiuyeke.bitefileapi.domain.dto.FileUploadDTO;
+import com.bitejiuyeke.bitefileapi.domain.vo.FileVO;
+import com.bitejiuyeke.bitefileapi.feign.FileFeignClient;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SysUserServiceImpl implements ISysUserService {
 
+    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
     @Autowired
     private SysUserMapper sysUserMapper;
 
@@ -38,6 +53,12 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private FileFeignClient fileFeignClient;
+
+    @Autowired
+    private TaskProducer taskProducer;
 
 
     @Override
@@ -80,40 +101,51 @@ public class SysUserServiceImpl implements ISysUserService {
     public Long addOrEdit(SysUserDTO sysUserDTO) {
         SysUser sysUser = new SysUser();
         if (sysUserDTO.getUserId() == null) {
+
+            if (StringUtils.isEmpty(sysUserDTO.getNickName())) {
+                sysUser.setNickName("Bite-sys-user-" + StringUtil.generateRandomStr(10));
+            }
+
             // 进行添加用户行为，校验用户信息
+            checkPhoneNumberIsValid(sysUserDTO.getPhoneNumber());
 
-            if (StringUtils.isEmpty(sysUserDTO.getPhoneNumber()) || !VerifyUtil.checkMobile(sysUserDTO.getPhoneNumber())) {
-                throw new ServiceException("手机号码格式错误！", ResultCode.INVALID_PARA.getCode());
-            }
+            // 校验用户的身份信息是否合法
+            checkIdentityIsValid(sysUserDTO.getIdentity());
 
-            if (sysUserMapper.exists(new LambdaQueryWrapper<SysUser>().select().eq(SysUser::getPhoneNumber, new Encrypt(sysUserDTO.getPhoneNumber())))) {
-                throw new ServiceException("手机号码已存在！", ResultCode.INVALID_PARA.getCode());
-            }
-
-            if (StringUtils.isEmpty(sysUserDTO.getPassword()) || !VerifyUtil.checkPassword(sysUserDTO.getPassword())) {
-                throw new ServiceException("密码格式错误！", ResultCode.INVALID_PARA.getCode());
-            }
-
-            // 校验用户的 identity 信息是否合法
-            DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(sysUserDTO.getIdentity());
-            if (dicDataDTO == null) {
-                throw new ServiceException("指定用户身份信息不存在！", ResultCode.INVALID_PARA.getCode());
-            }
+            // 校验用户的密码是否合法
+            checkPasswordIsValid(sysUserDTO.getPassword());
 
             BeanCopyUtil.copyProperties(sysUserDTO, sysUser);
             sysUser.getPhoneNumber().setValue(sysUserDTO.getPhoneNumber());
             sysUser.setPassword(DigestUtil.sha256Hex(sysUserDTO.getPassword()));
         } else {
             // 查看用户是否存在
-            if (!sysUserMapper.exists(new LambdaQueryWrapper<SysUser>().eq(SysUser::getId, sysUserDTO.getUserId()))) {
+            sysUser = sysUserMapper.selectById(sysUserDTO.getUserId());
+            if (sysUser == null) {
                 throw new ServiceException("当前编辑的用户不存在！", ResultCode.INVALID_PARA.getCode());
             }
-            sysUser.setId(sysUserDTO.getUserId());
-        }
 
-        if (StringUtils.isEmpty(sysUserDTO.getIdentity())
-                || sysDictionaryService.selectDicDataByDataKey(sysUserDTO.getIdentity()) == null) {
-            throw new ServiceException("身份信息不存在！", ResultCode.INVALID_PARA.getCode());
+            // 修改昵称
+            if (StringUtils.isNotEmpty(sysUserDTO.getNickName())) {
+                sysUser.setNickName(sysUserDTO.getNickName());
+            }
+
+            // 判断电话号码是否合法
+            if (StringUtils.isNotEmpty(sysUserDTO.getPhoneNumber())
+                    && !sysUser.getPhoneNumber().getValue().equals(sysUserDTO.getPhoneNumber())) {
+                checkPhoneNumberIsValid(sysUserDTO.getPhoneNumber());
+                sysUser.setPhoneNumber(new Encrypt(sysUserDTO.getPhoneNumber()));
+            }
+            // 判断密码是否合法
+            if (StringUtils.isNotEmpty(sysUserDTO.getPassword())) {
+                checkPasswordIsValid(sysUserDTO.getPassword());
+                sysUser.setPassword(DigestUtil.sha256Hex(sysUserDTO.getPassword()));
+            }
+            // 判断身份信息是否合法
+            if (StringUtils.isNotEmpty(sysUserDTO.getIdentity())) {
+                checkIdentityIsValid(sysUserDTO.getIdentity());
+                sysUser.setIdentity(sysUserDTO.getIdentity());
+            }
         }
 
         sysUser.setStatus(sysUserDTO.getStatus());
@@ -142,6 +174,105 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         return sysUserToSysUserDTO(sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
                 .select().eq(SysUser::getId, loginUser.getUserId())));
+    }
+
+    @Override
+    public void uploadAppUserInfoFile(MultipartFile excel) {
+        // 校验用户身份
+        if (!checkSysUserPrivacy(UserTypeConstants.ADMIN_USER)) {
+            throw new ServiceException("当前用户无权限！", ResultCode.PRIVACY_NOT_ENOUGH.getCode());
+        }
+        if (!ExcelUtils.columNameValidate(excel, AppUser.class)) {
+            throw new ServiceException("所上传的 excel 文件格式不符合 app 用户的落库要求！", ResultCode.INVALID_PARA.getCode());
+        }
+        try {
+            R<FileVO> uploadRet = fileFeignClient.upload(excel, FilePrefixConstants.APP_USER_EXCEL);
+            if (uploadRet == null || uploadRet.getData() == null || uploadRet.getCode() != ResultCode.SUCCESS.getCode()) {
+                throw new ServiceException("上传 excel 文件失败！", ResultCode.ERROR.getCode());
+            }
+
+            sendUploadAppTask(uploadRet.getData().getUrl());
+        } catch (Exception e) {
+            log.error("", e);
+        }
+
+
+    }
+
+    @Override
+    public void uploadAppUserInfoUrl(String excelUrl) {
+        // 校验用户身份
+        if (!checkSysUserPrivacy(UserTypeConstants.ADMIN_USER)) {
+            throw new ServiceException("当前用户无权限！", ResultCode.PRIVACY_NOT_ENOUGH.getCode());
+        }
+        sendUploadAppTask(excelUrl);
+    }
+
+    /**
+     * 校验手机号码是否合法
+     *
+     * @param phoneNumber 手机号码
+     */
+    private void checkPhoneNumberIsValid(String phoneNumber) {
+        if (StringUtils.isEmpty(phoneNumber) || !VerifyUtil.checkMobile(phoneNumber)) {
+            throw new ServiceException("手机号码格式错误！", ResultCode.INVALID_PARA.getCode());
+        }
+
+        if (sysUserMapper.exists(new LambdaQueryWrapper<SysUser>().select().eq(SysUser::getPhoneNumber, new Encrypt(phoneNumber)))) {
+            throw new ServiceException("手机号码已存在！", ResultCode.INVALID_PARA.getCode());
+        }
+
+    }
+
+    /**
+     * 校验密码是否合法
+     *
+     * @param password 密码
+     */
+    private void checkPasswordIsValid(String password) {
+        if (StringUtils.isEmpty(password) || !VerifyUtil.checkPassword(password)) {
+            throw new ServiceException("密码格式错误！", ResultCode.INVALID_PARA.getCode());
+        }
+    }
+
+    /**
+     * 校验身份是否合法
+     *
+     * @param identity 身份
+     */
+    private void checkIdentityIsValid(String identity) {
+        DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(identity);
+        if (dicDataDTO == null) {
+            throw new ServiceException("指定用户身份信息不存在！", ResultCode.INVALID_PARA.getCode());
+        }
+    }
+
+    /**
+     * 发送上传用户任务
+     *
+     * @param excelUrl 用户表格 url
+     */
+    private void sendUploadAppTask(String excelUrl) {
+        try {
+            taskProducer.sendTaskToMq(MqTaskTypeConstant.UPLOAD_APP_USER, excelUrl);
+        } catch (Exception e) {
+            throw new ServiceException("上传用户任务提交失败！", ResultCode.ERROR.getCode());
+        }
+    }
+
+    /**
+     * 判断当前用户是不是给定角色（依托 token）
+     *
+     * @param role 角色
+     * @return 是 = true ; 不是 = false
+     */
+    private boolean checkSysUserPrivacy(String role) {
+        LoginUserDTO loginUser = tokenService.getLoginUser();
+        if (loginUser == null) {return false;}
+        String userId = tokenService.getLoginUser().getUserId();
+        SysUser sysUser = sysUserMapper.selectById(userId);
+        return sysUser != null &&
+                sysDictionaryService.selectDicDataByDataKey(sysUser.getIdentity()).getTypeKey().equals(role);
     }
 
     /**

@@ -11,6 +11,7 @@ import com.bitejiuyeke.bitecommonrabbitmq.component.TaskProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,8 +21,6 @@ public class SysUserController {
 
     @Autowired
     private ISysUserService sysUserService;
-    @Autowired
-    private TaskProducer taskProducer;
 
 
     @PostMapping("/login/password")
@@ -66,9 +65,15 @@ public class SysUserController {
         return R.ok(sysUserService.getLoginInfo().convertToVO());
     }
 
-    @PostMapping("/upload/sysUser")
-    public R<Boolean> uploadAppUserInfo(@RequestBody SysUserDTO sysUserDTO) {
-        taskProducer.sendTaskToMq("upload", sysUserDTO);
+    @PostMapping("/upload/appUser/file")
+    public R<Void> uploadAppUserInfo(@RequestBody MultipartFile sysUserExcel) {
+        sysUserService.uploadAppUserInfoFile(sysUserExcel);
+        return R.ok();
+    }
+
+    @PostMapping("/upload/appUser/url")
+    public R<Void> uploadAppUserInfo(@RequestParam String sysUserExcelUrl) {
+        sysUserService.uploadAppUserInfoUrl(sysUserExcelUrl);
         return R.ok();
     }
 

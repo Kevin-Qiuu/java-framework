@@ -1,10 +1,16 @@
 package com.bitejiuyeke.bitenotifyapi.captcha.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
-public class LoginByPhoneReqDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginByPhoneReqDTO implements Serializable {
 
     @NotBlank(message = "电话号码为空！")
     private String phoneNumber;

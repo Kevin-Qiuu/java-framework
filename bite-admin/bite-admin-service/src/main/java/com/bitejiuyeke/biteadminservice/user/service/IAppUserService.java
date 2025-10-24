@@ -2,6 +2,8 @@ package com.bitejiuyeke.biteadminservice.user.service;
 
 import com.bitejiuyeke.biteadminapi.user.domain.dto.AppUserDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
+import com.bitejiuyeke.biteadminservice.user.domain.dto.AppUserListReqDTO;
+import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
 
@@ -45,4 +47,12 @@ public interface IAppUserService {
      * @return 返回列表
      */
     List<AppUserDTO> findUserList(List<Long> userIds);
+
+    /**
+     * 获取用户信息（列表&分页）
+     *
+     * @param appUserListReqDTO 用户信息请求体
+     * @return 用户信息列表（分页）
+     */
+    BasePageDTO<AppUserDTO> getUserList(AppUserListReqDTO appUserListReqDTO);
 }

@@ -2,8 +2,10 @@ package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class GeoAdInfoDTO {
+public class GeoAdInfoDTO implements Serializable {
 
     /**
      * 国家代码

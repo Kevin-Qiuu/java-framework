@@ -2,8 +2,10 @@ package com.bitejiuyeke.biteadminservice.map.domain.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class GeoFormattedAddressesDTO {
+public class GeoFormattedAddressesDTO implements Serializable {
 
     /**
      * 推荐使用的地址描述，描述精确性较高

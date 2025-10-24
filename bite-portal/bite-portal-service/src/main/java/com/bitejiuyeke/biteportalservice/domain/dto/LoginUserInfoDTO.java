@@ -4,8 +4,10 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.biteportalservice.domain.vo.LoginUserInfoVO;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class LoginUserInfoDTO {
+public class LoginUserInfoDTO implements Serializable {
 
     /**
      * redis 中存储用户的 key

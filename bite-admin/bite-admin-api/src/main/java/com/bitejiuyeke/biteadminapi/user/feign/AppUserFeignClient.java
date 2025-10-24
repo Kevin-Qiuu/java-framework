@@ -1,15 +1,12 @@
 package com.bitejiuyeke.biteadminapi.user.feign;
 
-import cn.hutool.log.Log;
 import com.bitejiuyeke.biteadminapi.user.domain.dto.EditUserReqDTO;
 import com.bitejiuyeke.biteadminapi.user.domain.vo.AppUserVO;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
@@ -27,8 +24,8 @@ public interface AppUserFeignClient {
      * @param phoneNumber 手机号
      * @return C端用户VO
      */
-    @GetMapping("/phone_find/{phoneNumber}")
-    R<AppUserVO> findByPhone(@PathVariable("phoneNumber") String phoneNumber);
+    @GetMapping("/phone_find")
+    R<AppUserVO> findByPhone(@RequestParam("phoneNumber") @NotEmpty(message = "电话号码不可为空！") String phoneNumber);
 
 
     /**
@@ -53,15 +50,15 @@ public interface AppUserFeignClient {
      * @param userId 用户 id
      * @return appUser
      */
-    @GetMapping("/findUser/{userId}")
-    R<AppUserVO> findById(@PathVariable("userId") @NotNull(message = "用户 id 为空！") Long userId);
+    @GetMapping("/id_find")
+    R<AppUserVO> findById(@RequestParam("userId") @NotNull(message = "用户 id 不可为空！") Long userId);
 
     /**
      * 获取用户登录信息（列表）
      * @param userIds 用户 id 列表
      * @return 返回列表
      */
-    @PostMapping("/findUserList")
+    @PostMapping("/list")
     R<List<AppUserVO>> findUserList(@RequestBody @NotEmpty(message = "至少需要一个用户 id") List<Long> userIds);
 
 

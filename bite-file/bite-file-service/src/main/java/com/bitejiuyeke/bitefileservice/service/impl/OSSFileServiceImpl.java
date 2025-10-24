@@ -7,6 +7,7 @@ import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
+import com.bitejiuyeke.bitefileapi.domain.dto.FileUploadDTO;
 import com.bitejiuyeke.bitefileservice.config.OSSProperties;
 import com.bitejiuyeke.bitefileservice.constants.OSSCustomConstants;
 import com.bitejiuyeke.bitefileservice.domain.dto.FileDTO;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.Mac;
@@ -40,21 +42,20 @@ public class OSSFileServiceImpl implements IFileService {
     private OSSProperties ossProperties;
 
     @Override
-    public FileDTO upload(MultipartFile file) {
-
-        if (file.isEmpty() || Objects.requireNonNull(file.getOriginalFilename()).lastIndexOf(".") == -1) {
+    public FileDTO upload(MultipartFile multipartFile, String filePrefix) {
+        if (multipartFile.isEmpty() || Objects.requireNonNull(multipartFile.getOriginalFilename()).lastIndexOf(".") == -1) {
             throw new ServiceException(ResultCode.OSS_UPLOAD_FAILED);
         }
 
-        String pathPrefix = ossProperties.getPathPrefix();
-        String originalFilename = file.getOriginalFilename();
+        String pathPrefix = ossProperties.getPathPrefix() + filePrefix;
+        String originalFilename = multipartFile.getOriginalFilename();
         String originalFileExtName = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFileName = UUID.randomUUID() + originalFileExtName;
         String objectName = pathPrefix + newFileName;
         String bucketName = ossProperties.getBucketName();
 
         try {
-            InputStream inputStream = file.getInputStream();
+            InputStream inputStream = multipartFile.getInputStream();
             // 创建PutObjectRequest对象。
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, inputStream);
             // 创建PutObject请求。

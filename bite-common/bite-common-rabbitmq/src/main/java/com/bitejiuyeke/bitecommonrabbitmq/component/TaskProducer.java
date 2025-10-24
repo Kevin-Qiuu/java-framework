@@ -1,7 +1,10 @@
 package com.bitejiuyeke.bitecommonrabbitmq.component;
 
 import com.bitejiuyeke.bitecommoncore.utils.JsonUtil;
+import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
+import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitecommonrabbitmq.domain.constants.TaskInfoConstant;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +35,11 @@ public class TaskProducer {
         Map<String, String> taskMsg = new HashMap<>();
         taskMsg.put(TaskInfoConstant.TASK_TYPE, taskType);
         taskMsg.put(TaskInfoConstant.PAYLOAD, JsonUtil.obj2String(payload));
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, taskMsg);
+        try {
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, taskMsg);
+        } catch (AmqpException e) {
+            throw new ServiceException("任务提交失败！", ResultCode.ERROR.getCode());
+        }
     }
 
 }
