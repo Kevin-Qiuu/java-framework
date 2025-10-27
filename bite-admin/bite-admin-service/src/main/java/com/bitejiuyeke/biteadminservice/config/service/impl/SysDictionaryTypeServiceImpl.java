@@ -12,6 +12,7 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import jodd.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     @Override
     public BasePageDTO<DicTypeDTO> getDictionaryTypeList(DicTypeReadReqDTO dicTypeReadReqDTO) {
         // 创建分页对象
-        Page<SysDictionaryType> page = new Page<>(dicTypeReadReqDTO.getPageIndex(), dicTypeReadReqDTO.getPageSize());
+        Page<SysDictionaryType> page = new Page<>(dicTypeReadReqDTO.getOffset(), dicTypeReadReqDTO.getPageSize());
 
         // 构建查询条件
         LambdaQueryWrapper<SysDictionaryType> queryWrapper = new LambdaQueryWrapper<SysDictionaryType>().select();
@@ -113,9 +114,10 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         // 存在的话判断字典数据键值是否存在
         if (sysDictionaryDataMapper.exists(new LambdaQueryWrapper<SysDictionaryData>()
                 .select(SysDictionaryData::getDataKey)
-                .eq(SysDictionaryData::getDataKey, dicDataWriteReqDTO.getDataKey())
-                .or()
-                .eq(SysDictionaryData::getValue, dicDataWriteReqDTO.getValue()))) {
+                .or(query ->
+                        query.eq(SysDictionaryData::getTypeKey, dicDataWriteReqDTO.getTypeKey())
+                                .eq(SysDictionaryData::getDataKey, dicDataWriteReqDTO.getDataKey()))
+                .or(query -> query.eq(SysDictionaryData::getValue, dicDataWriteReqDTO.getValue())))) {
             throw new ServiceException("字典数据已存在重复键或值！");
         }
 
@@ -142,7 +144,7 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         dataQuery.orderByAsc(SysDictionaryData::getId);
 
         Page<SysDictionaryData> dataPage = sysDictionaryDataMapper.selectPage
-                (new Page<>(dicDataReadReqDTO.getPageIndex(), dicDataReadReqDTO.getPageSize()), dataQuery);
+                (new Page<>(dicDataReadReqDTO.getOffset(), dicDataReadReqDTO.getPageSize()), dataQuery);
         BasePageDTO<DicDataDTO> basePageDTO = new BasePageDTO<>();
         basePageDTO.setTotals((int) dataPage.getTotal());
         basePageDTO.setTotalPages((int) dataPage.getPages());
@@ -152,26 +154,27 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
     }
 
     @Override
-    public Long editDictionaryData(DicDataWriteReqDTO dicDataWriteReqDTO) {
-        // 判断字典类型是否存在
-        LambdaQueryWrapper<SysDictionaryType> typeQuery = new LambdaQueryWrapper<>();
-        typeQuery.select(SysDictionaryType::getTypeKey).eq(SysDictionaryType::getTypeKey, dicDataWriteReqDTO.getTypeKey());
-        if (!sysDictionaryTypeMapper.exists(typeQuery)) {
-            throw new ServiceException("当前的字典类型键不存在！");
-        }
+    public Long editDictionaryData(DicDataEditReqDTO dicDataEditReqDTO) {
 
-        // 判断字典键值是否存在
+        // 判断字典数据键值是否存在
         LambdaQueryWrapper<SysDictionaryData> dataQuery = new LambdaQueryWrapper<>();
-        dataQuery.select(SysDictionaryData::getTypeKey)
-                .eq(SysDictionaryData::getTypeKey, dicDataWriteReqDTO.getTypeKey())
-                .eq(SysDictionaryData::getDataKey, dicDataWriteReqDTO.getDataKey());
+        dataQuery.select().eq(SysDictionaryData::getDataKey, dicDataEditReqDTO.getDataKey());
         SysDictionaryData sysDictionaryData = sysDictionaryDataMapper.selectOne(dataQuery);
-        if (!sysDictionaryDataMapper.exists(dataQuery)) {
+        if (sysDictionaryData == null) {
             throw new ServiceException("当前的字典数据键不存在！");
         }
 
         // 修改
-        BeanCopyUtil.copyProperties(dicDataWriteReqDTO, sysDictionaryData);
+        if (StringUtils.isNotEmpty(dicDataEditReqDTO.getRemark()))
+            sysDictionaryData.setRemark(dicDataEditReqDTO.getRemark());
+
+        if (dicDataEditReqDTO.getSort() != null)
+            sysDictionaryData.setSort(dicDataEditReqDTO.getSort());
+
+        if (dicDataEditReqDTO.getStatus() != null)
+            sysDictionaryData.setStatus(dicDataEditReqDTO.getStatus());
+
+        sysDictionaryData.setValue(dicDataEditReqDTO.getValue());
         sysDictionaryDataMapper.updateById(sysDictionaryData);
 
         // 返回
@@ -209,17 +212,12 @@ public class SysDictionaryTypeServiceImpl implements ISysDictionaryService {
         return dicDataDTOMap;
     }
 
-    // todo: test
     @Override
-    public DicDataDTO selectDicDataByDataKey(String dataKey) {
-        DicDataDTO dicDataDTO = new DicDataDTO();
-        SysDictionaryData sysDictionaryData = sysDictionaryDataMapper
-                .selectOne(new LambdaQueryWrapper<SysDictionaryData>()
+    public List<DicDataDTO> selectDicDataByDataKey(String dataKey) {
+        List<SysDictionaryData> selectList = sysDictionaryDataMapper
+                .selectList(new LambdaQueryWrapper<SysDictionaryData>()
                         .eq(SysDictionaryData::getDataKey, dataKey));
-        if (sysDictionaryData == null)
-            return null;
-        BeanCopyUtil.copyProperties(sysDictionaryData, dicDataDTO);
-        return dicDataDTO;
+        return BeanCopyUtil.copyListProperties(selectList, DicDataDTO::new);
     }
 
     @Override

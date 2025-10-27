@@ -14,6 +14,7 @@ import com.bitejiuyeke.bitecommondomain.domain.ResultCode;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import jodd.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,6 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
 
     }
 
-    // todo: test
     @Override
     public BasePageDTO<ArgDTO> argumentList(ArgReadReqDTO argReadReqDTO) {
 
@@ -58,7 +58,7 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
         }
 
         Page<SysArgument> argumentPage = sysArgumentMapper
-                .selectPage(new Page<>(argReadReqDTO.getPageIndex(), argReadReqDTO.getPageSize()), queryWrapper);
+                .selectPage(new Page<>(argReadReqDTO.getOffset(), argReadReqDTO.getPageSize()), queryWrapper);
         BasePageDTO<ArgDTO> basePageDTO = new BasePageDTO<>();
         basePageDTO.setTotals((int) argumentPage.getTotal());
         basePageDTO.setTotalPages((int) argumentPage.getPages());
@@ -66,7 +66,6 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
         return basePageDTO;
     }
 
-    // todo: test
     @Override
     public Long argumentEdit(ArgWriteReqDTO argWriteReqDTO) {
         // 判断存在
@@ -82,6 +81,9 @@ public class SysArgumentServiceImpl implements ISysArgumentService {
             throw new ServiceException("参数名字已存在！", ResultCode.INVALID_PARA.getCode());
         }
         // 存在则更新
+        if (StringUtils.isEmpty(argWriteReqDTO.getRemark())) {
+            argWriteReqDTO.setRemark(sysArgument.getRemark());
+        }
         BeanCopyUtil.copyProperties(argWriteReqDTO, sysArgument);
         sysArgumentMapper.updateById(sysArgument);
         return sysArgument.getId();
