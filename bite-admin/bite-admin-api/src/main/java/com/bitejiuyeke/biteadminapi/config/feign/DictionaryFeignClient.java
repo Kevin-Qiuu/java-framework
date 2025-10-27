@@ -24,7 +24,7 @@ public interface DictionaryFeignClient {
      * @param typeKey 字典类型键（非空）
      * @return 字典数据的 list
      */
-    @GetMapping("/dictionaryData/typeKey")
+    @GetMapping("/dictionary_data/type_key")
     R<List<DicDataVO>> selectDicDataByTypeKey(@RequestParam("typeKey") @NotBlank(message = "字典类型键为空！") String typeKey);
 
     /**
@@ -33,7 +33,7 @@ public interface DictionaryFeignClient {
      * @param dicListReqDTO 字典类型键集合 dto
      * @return 字典类型键：字典数据
      */
-    @PostMapping("/dictionaryData/typeKeys")
+    @PostMapping("/dictionary_data/type_keys")
     R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody @Validated DicListReqDTO dicListReqDTO);
 
     /**
@@ -42,7 +42,7 @@ public interface DictionaryFeignClient {
      * @param dicDataReadReqDTO 读字典类型值请求体
      * @return 翻页列表
      */
-    @PostMapping("/dictionaryData/list")
+    @PostMapping("/dictionary_data/list")
     R<BasePageVO<DicDataVO>> getDictionaryDataList(@RequestBody DicDataReadReqDTO dicDataReadReqDTO);
 
 
@@ -52,8 +52,8 @@ public interface DictionaryFeignClient {
      * @param dataKey 字典数据键
      * @return 字典数据
      */
-    @GetMapping("/dictionaryData/dataKey")
-    R<DicDataVO> selectDicDataByDataKey(@RequestParam("dataKey") @NotBlank(message = "字典数据键为空！") String dataKey);
+    @GetMapping("/dictionary_data/data_key")
+    R<List<DicDataVO>> selectDicDataByDataKey(@RequestParam("dataKey") @NotBlank(message = "字典数据键为空！") String dataKey);
 
     /**
      * 根据多个字典数据键查询对应的字典数据
@@ -61,7 +61,7 @@ public interface DictionaryFeignClient {
      * @param dicListReqDTO 字典数据键集合 dto
      * @return 字典数据的 List
      */
-    @PostMapping("/dictionaryData/dataKeys")
+    @PostMapping("/dictionary_data/data_keys")
     R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody @Validated DicListReqDTO dicListReqDTO);
 
 }

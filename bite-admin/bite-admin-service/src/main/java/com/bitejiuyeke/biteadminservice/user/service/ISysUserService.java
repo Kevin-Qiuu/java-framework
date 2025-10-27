@@ -2,6 +2,7 @@ package com.bitejiuyeke.biteadminservice.user.service;
 
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserDTO;
+import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserSearchReqDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,12 +29,10 @@ public interface ISysUserService {
     /**
      * 获取用户信息列表
      *
-     * @param userId 用户 id
-     * @param phoneNumber 用户电话号码
-     * @param status 用户状态
+     * @param searchReqDTO 查询请求体
      * @return List<SysUserDTO>
      */
-    List<SysUserDTO> getUserList(Long userId, String phoneNumber, String status);
+    List<SysUserDTO> getUserList(SysUserSearchReqDTO searchReqDTO);
 
     /**
      * 获取用户登录信息

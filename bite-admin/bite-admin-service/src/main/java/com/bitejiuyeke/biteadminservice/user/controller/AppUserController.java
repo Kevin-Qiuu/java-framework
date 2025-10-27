@@ -13,7 +13,6 @@ import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.TokenVO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitenotifyapi.captcha.domain.dto.LoginByPhoneReqDTO;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,8 +97,9 @@ public class AppUserController implements AppUserFeignClient {
                 .toList());
     }
 
-        /**
+    /**
      * 查询C端用户
+     *
      * @param appUserListReqDTO 查询C端用户DTO
      * @return C端用户分页结果
      */
