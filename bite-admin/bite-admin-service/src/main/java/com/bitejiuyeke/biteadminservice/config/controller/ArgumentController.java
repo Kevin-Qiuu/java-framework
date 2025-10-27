@@ -68,7 +68,7 @@ public class ArgumentController implements ArgumentFeignClient {
      * @return 参数值
      */
     @Override
-    @GetMapping("/argument/configKey/{configKey}")
+    @GetMapping("/argument/config_key/{configKey}")
     public R<ArgVO> argumentByConfigKey(@PathVariable("configKey") String configKey) {
         ArgDTO argDTO = sysArgumentService.argumentByConfigKey(configKey);
         if (argDTO == null) {
@@ -86,7 +86,7 @@ public class ArgumentController implements ArgumentFeignClient {
      * @return 参数值列表
      */
     @Override
-    @PostMapping("/argument/configKeys")
+    @PostMapping("/argument/config_keys")
     public R<List<ArgVO>> argumentByConfigKeys(@RequestBody ArgListReqDTO argListReqDTO) {
         List<ArgDTO> argDTOs = sysArgumentService.argumentByConfigKeys(argListReqDTO);
         return R.ok(BeanCopyUtil.copyListProperties(argDTOs, ArgVO::new));

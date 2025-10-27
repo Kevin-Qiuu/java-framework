@@ -10,7 +10,7 @@ public class BasePageReqDTO implements Serializable {
     /**
      * 查询页下标
      */
-    private Integer pageIndex = 1;
+    private Integer pageNo = 1;
 
     /**
      * 单页元素总数
@@ -22,7 +22,7 @@ public class BasePageReqDTO implements Serializable {
      * @return 当前页的第一项在 list 中的下标
      */
     public Integer getOffset() {
-        return (pageIndex - 1) * pageSize;
+        return (pageNo - 1) * pageSize;
     }
 
 }

@@ -47,8 +47,7 @@ public class TencentMapProvider implements IMapProvider {
     @Override
     public PoiListDTO searchTencentMapPoiByRegion(SuggestSearchDTO suggestSearchDTO) {
         /*
-        https://apis.map.qq.com/ws/place/v1/suggestion?
-        region=德州市&keyword=新贝&key=PW2BZ-NZHKW-3TBR2-YXR64-LPLG5-OXFJQ&region_fix=1
+        https://apis.map.qq.com/ws/place/v1/suggestion?region=德州市&keyword=新贝&key=PW2BZ-NZHKW-3TBR2-YXR64-LPLG5-OXFJQ&region_fix=1
          */
 
         if (suggestSearchDTO == null) {
@@ -58,7 +57,7 @@ public class TencentMapProvider implements IMapProvider {
         String url = String.format(apiServer + MapConstants.TENCENT_MAP_API_PLACE_SUGGESTION
                 + "?region=%s&keyword=%s&key=%s&region_fix=%s&page_index=%s&page_size=%s",
                 suggestSearchDTO.getCode(), suggestSearchDTO.getKeyword(), key, suggestSearchDTO.getRegion_fix(),
-                suggestSearchDTO.getPageIndex(), suggestSearchDTO.getPageSize());
+                suggestSearchDTO.getPageNo(), suggestSearchDTO.getPageSize());
         ResponseEntity<PoiListDTO> response = restTemplate.getForEntity(url, PoiListDTO.class);
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new ServiceException(ResultCode.TencentMAP_QUERY_FAILED);
@@ -70,8 +69,7 @@ public class TencentMapProvider implements IMapProvider {
     @Override
     public GeoResultDTO geoCoderTencentMap(LocationDTO locationDTO) {
         /*
-         https://apis.map.qq.com/ws/geocoder/v1?
-         location=37.446459,116.362957&key=PW2BZ-NZHKW-3TBR2-YXR64-LPLG5-OXFJQ
+         https://apis.map.qq.com/ws/geocoder/v1?location=37.446459,116.362957&key=PW2BZ-NZHKW-3TBR2-YXR64-LPLG5-OXFJQ
          */
 
         if (locationDTO == null) {

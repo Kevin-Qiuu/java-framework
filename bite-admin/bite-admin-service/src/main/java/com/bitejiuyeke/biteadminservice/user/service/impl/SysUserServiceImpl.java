@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bitejiuyeke.biteadminapi.config.domain.dto.DicDataDTO;
 import com.bitejiuyeke.biteadminservice.config.service.ISysDictionaryService;
 import com.bitejiuyeke.biteadminservice.user.constants.MqTaskTypeConstant;
+import com.bitejiuyeke.biteadminservice.user.constants.SysUserStatus;
 import com.bitejiuyeke.biteadminservice.user.constants.UserTypeConstants;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.LoginPasswordDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserDTO;
+import com.bitejiuyeke.biteadminservice.user.domain.dto.SysUserSearchReqDTO;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.AppUser;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.Encrypt;
 import com.bitejiuyeke.biteadminservice.user.domain.entity.SysUser;
 import com.bitejiuyeke.biteadminservice.user.mapper.SysUserMapper;
-import com.bitejiuyeke.biteadminservice.user.mq.domain.FileTaskDTO;
 import com.bitejiuyeke.biteadminservice.user.service.ISysUserService;
 import com.bitejiuyeke.bitecommoncore.utils.*;
 import com.bitejiuyeke.bitecommondomain.constants.FilePrefixConstants;
@@ -22,24 +23,17 @@ import com.bitejiuyeke.bitecommondomain.exception.ServiceException;
 import com.bitejiuyeke.bitecommondomain.domain.dto.LoginUserDTO;
 import com.bitejiuyeke.bitecommondomain.domain.dto.TokenDTO;
 import com.bitejiuyeke.bitecommonrabbitmq.component.TaskProducer;
-import com.bitejiuyeke.bitecommonrabbitmq.handler.TaskHandler;
 import com.bitejiuyeke.bitecommonsecurity.service.TokenService;
-import com.bitejiuyeke.bitefileapi.domain.dto.FileUploadDTO;
 import com.bitejiuyeke.bitefileapi.domain.vo.FileVO;
 import com.bitejiuyeke.bitefileapi.feign.FileFeignClient;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SysUserServiceImpl implements ISysUserService {
@@ -115,6 +109,9 @@ public class SysUserServiceImpl implements ISysUserService {
             // 校验用户的密码是否合法
             checkPasswordIsValid(sysUserDTO.getPassword());
 
+            // 校验用户的状态是否合法
+            checkStatusIsValid(sysUserDTO.getStatus());
+
             BeanCopyUtil.copyProperties(sysUserDTO, sysUser);
             sysUser.getPhoneNumber().setValue(sysUserDTO.getPhoneNumber());
             sysUser.setPassword(DigestUtil.sha256Hex(sysUserDTO.getPassword()));
@@ -156,11 +153,19 @@ public class SysUserServiceImpl implements ISysUserService {
 
 
     @Override
-    public List<SysUserDTO> getUserList(Long userId, String phoneNumber, String status) {
+    public List<SysUserDTO> getUserList(SysUserSearchReqDTO searchReqDTO) {
+
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<SysUser>().select();
-        if (userId != null) queryWrapper.eq(SysUser::getId, userId);
-        if (VerifyUtil.checkMobile(phoneNumber)) queryWrapper.eq(SysUser::getPhoneNumber, phoneNumber);
-        if (StringUtils.isNotEmpty(status)) queryWrapper.eq(SysUser::getStatus, status);
+
+        if (searchReqDTO.getUserId() != null)
+            queryWrapper.eq(SysUser::getId, searchReqDTO.getUserId());
+
+        if (VerifyUtil.checkMobile(searchReqDTO.getPhoneNumber()))
+            queryWrapper.eq(SysUser::getPhoneNumber, searchReqDTO.getPhoneNumber());
+
+        if (StringUtils.isNotEmpty(searchReqDTO.getStatus()))
+            queryWrapper.eq(SysUser::getStatus, searchReqDTO.getStatus());
+
         return sysUserMapper.selectList(queryWrapper).stream().map(this::sysUserToSysUserDTO).toList();
 
     }
@@ -241,9 +246,20 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param identity 身份
      */
     private void checkIdentityIsValid(String identity) {
-        DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(identity);
-        if (dicDataDTO == null) {
+        List<DicDataDTO> dicDataDTO = sysDictionaryService.selectDicDataByDataKey(identity);
+        if (dicDataDTO.isEmpty()) {
             throw new ServiceException("指定用户身份信息不存在！", ResultCode.INVALID_PARA.getCode());
+        }
+    }
+
+    /**
+     * 校验状态是否合法
+     *
+     * @param status 状态
+     */
+    private void checkStatusIsValid(String status) {
+        if (!SysUserStatus.isStatusValid(status)) {
+            throw new ServiceException("用户所指定的状态信息错误！", ResultCode.INVALID_PARA.getCode());
         }
     }
 
@@ -268,11 +284,14 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     private boolean checkSysUserPrivacy(String role) {
         LoginUserDTO loginUser = tokenService.getLoginUser();
-        if (loginUser == null) {return false;}
+        if (loginUser == null) {
+            return false;
+        }
         String userId = tokenService.getLoginUser().getUserId();
         SysUser sysUser = sysUserMapper.selectById(userId);
         return sysUser != null &&
-                sysDictionaryService.selectDicDataByDataKey(sysUser.getIdentity()).getTypeKey().equals(role);
+                sysDictionaryService.selectDicDataByTypeKey(role).stream()
+                        .map(DicDataDTO::getDataKey).toList().contains(sysUser.getIdentity());
     }
 
     /**

@@ -223,38 +223,48 @@ public class AppUserServiceImpl implements IAppUserService {
     public BasePageDTO<AppUserDTO> getUserList(AppUserListReqDTO appUserListReqDTO) {
         BasePageDTO<AppUserDTO> pageDTO = new BasePageDTO<>();
         LambdaQueryWrapper<AppUser> appUserQuery = new LambdaQueryWrapper<>();
+
         if (appUserListReqDTO.getUserId() != null) {
             appUserQuery.eq(AppUser::getId, appUserListReqDTO.getUserId());
         }
         if (StringUtils.isNotEmpty(appUserListReqDTO.getNickName())) {
-            appUserQuery.eq(AppUser::getNickName, appUserListReqDTO.getNickName());
+            appUserQuery.likeRight(AppUser::getNickName, appUserListReqDTO.getNickName());
         }
         if (StringUtils.isNotEmpty(appUserListReqDTO.getPhoneNumber()) && VerifyUtil.checkMobile(appUserListReqDTO.getPhoneNumber())) {
             appUserQuery.eq(AppUser::getPhoneNumber, new Encrypt(appUserListReqDTO.getPhoneNumber()));
         }
-        if (StringUtils.isNotEmpty(appUserListReqDTO.getNickName())) {
-            appUserQuery.eq(AppUser::getNickName, appUserListReqDTO.getNickName());
+        if (StringUtils.isNotEmpty(appUserListReqDTO.getOpenId())) {
+            appUserQuery.eq(AppUser::getOpenId, appUserListReqDTO.getOpenId());
         }
 
         // 获取查询总数
         Long selectCount = appUserMapper.selectCount(appUserQuery);
-        if (selectCount == 0) {
-            return null;
-        }
         pageDTO.setTotals(selectCount.intValue());
         pageDTO.setTotalPages(BasePageDTO.calculateTotalPages(selectCount, appUserListReqDTO.getPageSize()));
-
-        // 获取分页 list
-        Page<AppUser> appUserPage = new Page<>(appUserListReqDTO.getPageIndex(), appUserListReqDTO.getPageSize());
-        List<AppUser> records = appUserMapper.selectPage(appUserPage, appUserQuery).getRecords();
-
-        // 判断是否超页
-        if (records.isEmpty()) {
+        if (selectCount == 0) {
             pageDTO.setList(null);
             return pageDTO;
         }
 
-        pageDTO.setList(records.stream().map(this::convertToAppUserDTO).toList());
+        // 获取分页 list
+        Page<AppUser> appUserPage = new Page<>(appUserListReqDTO.getOffset(), appUserListReqDTO.getPageSize());
+        List<AppUser> records = appUserMapper.selectPage(appUserPage, appUserQuery).getRecords();
+
+        // 判断是否超页
+        if (records.isEmpty()){
+            pageDTO.setList(null);
+            return pageDTO;
+        }
+
+        List<AppUserDTO> appUserDTOS = records.stream().map(appUser -> {
+            AppUserDTO appUserDTO = new AppUserDTO();
+            BeanCopyUtil.copyProperties(appUser, appUserDTO);
+            appUserDTO.setUserId(appUser.getId());
+            appUserDTO.setPhoneNumber(appUser.getPhoneNumber().getValue());
+            return appUserDTO;
+        }).toList();
+
+        pageDTO.setList(appUserDTOS);
         return pageDTO;
     }
 }

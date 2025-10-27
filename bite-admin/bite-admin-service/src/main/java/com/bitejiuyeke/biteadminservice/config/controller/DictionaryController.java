@@ -9,7 +9,6 @@ import com.bitejiuyeke.bitecommoncore.utils.BeanCopyUtil;
 import com.bitejiuyeke.bitecommondomain.domain.R;
 import com.bitejiuyeke.bitecommondomain.domain.dto.BasePageDTO;
 import com.bitejiuyeke.bitecommondomain.domain.vo.BasePageVO;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicTypeWriteReqDTO 写字典类型请求体
      * @return 新增字典 id
      */
-    @PostMapping("/dictionaryType/add")
+    @PostMapping("/dictionary_type/add")
     public R<Long> addDictionaryType(@RequestBody @Validated DicTypeWriteReqDTO dicTypeWriteReqDTO) {
         Long addDicTypeId = sysDictionaryService.addDictionaryType(dicTypeWriteReqDTO);
         return R.ok(addDicTypeId);
@@ -42,7 +41,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicTypeReadReqDTO 读字典类型请求体
      * @return 翻页列表
      */
-    @PostMapping("/dictionaryType/list")
+    @PostMapping("/dictionary_type/list")
     public R<BasePageVO<DicTypeVO>> getDictionaryTypeList(@RequestBody DicTypeReadReqDTO dicTypeReadReqDTO) {
         BasePageDTO<DicTypeDTO> basePageDTO = sysDictionaryService.getDictionaryTypeList(dicTypeReadReqDTO);
         BasePageVO<DicTypeVO> basePageVO = new BasePageVO<>();
@@ -58,7 +57,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicTypeWriteReqDTO 写字典类型请求体
      * @return 编辑字典类型 Id
      */
-    @PostMapping("/dictionaryType/edit")
+    @PostMapping("/dictionary_type/edit")
     public R<Long> editDictionaryType(@RequestBody @Validated DicTypeWriteReqDTO dicTypeWriteReqDTO) {
         Long editDicTypeId = sysDictionaryService.editDictionaryType(dicTypeWriteReqDTO);
         return R.ok(editDicTypeId);
@@ -70,7 +69,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicDataWriteReqDTO 写字典数据请求体
      * @return 新增字典数据 Id
      */
-    @PostMapping("/dictionaryData/add")
+    @PostMapping("/dictionary_data/add")
     public R<Long> addDictionaryData(@RequestBody @Validated DicDataWriteReqDTO dicDataWriteReqDTO) {
         Long addDicDataId = sysDictionaryService.addDictionaryData(dicDataWriteReqDTO);
         return R.ok(addDicDataId);
@@ -82,7 +81,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @param dicDataReadReqDTO 读字典类型值请求体
      * @return 翻页列表
      */
-    @PostMapping("/dictionaryData/list")
+    @PostMapping("/dictionary_data/list")
     public R<BasePageVO<DicDataVO>> getDictionaryDataList(@RequestBody DicDataReadReqDTO dicDataReadReqDTO) {
         BasePageDTO<DicDataDTO> basePageDTO = sysDictionaryService.getDictionaryDataList(dicDataReadReqDTO);
         BasePageVO<DicDataVO> basePageVO = new BasePageVO<>();
@@ -94,12 +93,12 @@ public class DictionaryController implements DictionaryFeignClient {
     /**
      * 编辑字典数据
      *
-     * @param dicDataWriteReqDTO 写字典数据请求体
+     * @param dicDataEditReqDTO 编辑字典数据请求体
      * @return 编辑的字典数据 id
      */
-    @PostMapping("/dictionaryData/edit")
-    public R<Long> editDictionaryData(DicDataWriteReqDTO dicDataWriteReqDTO) {
-        Long editDicDataId = sysDictionaryService.editDictionaryData(dicDataWriteReqDTO);
+    @PostMapping("/dictionary_data/edit")
+    public R<Long> editDictionaryData(@RequestBody @Validated DicDataEditReqDTO dicDataEditReqDTO) {
+        Long editDicDataId = sysDictionaryService.editDictionaryData(dicDataEditReqDTO);
         return R.ok(editDicDataId);
     }
 
@@ -110,7 +109,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据的 list
      */
     @Override
-    @GetMapping("/dictionaryData/typeKey")
+    @GetMapping("/dictionary_data/type_key")
     public R<List<DicDataVO>> selectDicDataByTypeKey(@RequestParam("typeKey") String typeKey) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByTypeKey(typeKey);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
@@ -123,7 +122,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典类型键：字典数据
      */
     @Override
-    @PostMapping("/dictionaryData/typeKeys")
+    @PostMapping("/dictionary_data/type_keys")
     public R<Map<String, List<DicDataVO>>> selectDicDataByTypeKeys(@RequestBody DicListReqDTO dicListReqDTO) {
         Map<String, List<DicDataDTO>> dicDataDTOMap = sysDictionaryService.selectDicDataByTypeKeys(dicListReqDTO);
         Map<String, List<DicDataVO>> dicDataVOMap = new HashMap<>();
@@ -138,17 +137,13 @@ public class DictionaryController implements DictionaryFeignClient {
      * 根据一个字数据键查询对应的字典数据
      *
      * @param dataKey 字典数据键
-     * @return 字典数据
+     * @return 字典数据list
      */
     @Override
-    @GetMapping("/dictionaryData/dataKey")
-    public R<DicDataVO> selectDicDataByDataKey(@RequestParam("dataKey") String dataKey) {
-        DicDataDTO dicDataDTO = sysDictionaryService.selectDicDataByDataKey(dataKey);
-        if (dicDataDTO == null)
-            return R.ok(null);
-        DicDataVO dicDataVO = new DicDataVO();
-        BeanCopyUtil.copyProperties(dicDataDTO, dicDataVO);
-        return R.ok(dicDataVO);
+    @GetMapping("/dictionary_data/data_key")
+    public R<List<DicDataVO>> selectDicDataByDataKey(@RequestParam("dataKey") String dataKey) {
+        List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKey(dataKey);
+        return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
     }
 
     /**
@@ -158,7 +153,7 @@ public class DictionaryController implements DictionaryFeignClient {
      * @return 字典数据的 List
      */
     @Override
-    @PostMapping("/dictionaryData/dataKeys")
+    @PostMapping("/dictionary_data/data_keys")
     public R<List<DicDataVO>> selectDicDataByDataKeys(@RequestBody DicListReqDTO dicListReqDTO) {
         List<DicDataDTO> dicDataDTOS = sysDictionaryService.selectDicDataByDataKeys(dicListReqDTO);
         return R.ok(BeanCopyUtil.copyListProperties(dicDataDTOS, DicDataVO::new));
